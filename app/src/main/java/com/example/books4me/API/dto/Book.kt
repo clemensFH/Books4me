@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class Bookingtion(
     val authorName: String,
     val publishDate: String,
-    val title: String
+    val title: String?
 )
