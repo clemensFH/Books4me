@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
+    kotlin("plugin.serialization") version "2.0.0"
 }
 
 kotlin {
@@ -86,5 +87,5 @@ dependencies {
     val ktor_version = "2.3.11"
     implementation("io.ktor:ktor-client-core:$ktor_version")
     implementation("io.ktor:ktor-client-cio:$ktor_version")
-
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 }
