@@ -3,12 +3,14 @@ package com.example.books4me.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ShapeDefaults
@@ -43,7 +45,7 @@ fun SearchResultRow(
             .fillMaxWidth()
             .padding(5.dp)
             .clickable {}
-            .height(200.dp),
+            .height(250.dp),
         shape = ShapeDefaults.Large,
         elevation = CardDefaults.cardElevation(10.dp),
     ) {
@@ -69,6 +71,16 @@ fun SearchResultRow(
                 book.title?.let { Text(text = it) }
                 Text(text = book.authorName)
                 Text(text = book.subject)
+                Spacer(modifier = Modifier.padding(5.dp))
+                Button(onClick = { /*TODO*/ }) {
+                    Text(text = "Readlist")
+                }
+                Button(onClick = { /*TODO*/ }) {
+                    Text(text = "Plan-to-Read")
+                }
+                Button(onClick = { /*TODO*/ }) {
+                    Text(text = "Collection")
+                }
             }
         }
     }
