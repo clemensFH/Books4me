@@ -3,27 +3,11 @@ package com.example.books4me.screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,13 +17,16 @@ import com.example.books4me.API.BookServiceImpl
 import com.example.books4me.API.dto.Book
 import com.example.books4me.components.AppBottomNavigation
 import com.example.books4me.components.SearchResultList
+import com.example.books4me.viewmodels.BookViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.lang.Exception
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen(navController: NavHostController, bookViewModel: BookViewModel) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -50,16 +37,27 @@ fun HomeScreen(navController: NavHostController) {
             AppBottomNavigation(navController = navController)
         }
     ) { innerPadding ->
-        HomeScreenContent(Modifier.padding(innerPadding)
-                                .background(Color.Yellow)
-                                .fillMaxHeight())
+        HomeScreenContent(
+            Modifier
+                .padding(innerPadding)
+                .background(Color.Yellow)
+                .fillMaxHeight(),
+            navController,
+            bookViewModel
+        )
     }
 }
 
 @Composable
-fun HomeScreenContent(modifier: Modifier) {
+fun HomeScreenContent(
+    modifier: Modifier,
+    navController: NavHostController,
+    bookViewModel: BookViewModel
+) {
     var searchText by remember { mutableStateOf("") }
     var books by remember { mutableStateOf(emptyList<Book>()) }
+    var isLoading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val bookService = BookServiceImpl()
 
@@ -69,7 +67,8 @@ fun HomeScreenContent(modifier: Modifier) {
                 value = searchText,
                 onValueChange = { searchText = it },
                 modifier = Modifier
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .weight(1f),
                 placeholder = { Text("Title") },
                 singleLine = true,
                 leadingIcon = {
@@ -77,13 +76,21 @@ fun HomeScreenContent(modifier: Modifier) {
                 }
             )
             OutlinedButton(onClick = {
-//                        val books = runBlocking {
-//                            bookService.searchBooksByTitle("Der+Idiot")
-//                        }
-                CoroutineScope(Dispatchers.Default).launch {
-                    books = bookService.searchBooksByTitle(searchText)
-                    books.forEach { println(it) }
-                    println("search finished")
+                isLoading = true
+                errorMessage = null
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val result = bookService.searchBooksByTitle(searchText)
+                        withContext(Dispatchers.Main) {
+                            books = result
+                            isLoading = false
+                        }
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            isLoading = false
+                            errorMessage = "Failed to load books: ${e.message}"
+                        }
+                    }
                 }
             }) {
                 Text(text = "Search")
@@ -98,10 +105,24 @@ fun HomeScreenContent(modifier: Modifier) {
             contentAlignment = Alignment.Center
         ) {
             Spacer(modifier = Modifier.padding(16.dp))
-            if (books.isEmpty()){
-                Text(text = "No search results")
+            when {
+                isLoading -> {
+                    CircularProgressIndicator()
+                }
+                errorMessage != null -> {
+                    Text(text = errorMessage ?: "Unknown error")
+                }
+                books.isEmpty() -> {
+                    Text(text = "No search results")
+                }
+                else -> {
+                    SearchResultList(
+                        results = books,
+                        navController = navController,
+                        bookViewModel = bookViewModel
+                    )
+                }
             }
-            SearchResultList(results = books, modifier = Modifier)
         }
     }
 }
