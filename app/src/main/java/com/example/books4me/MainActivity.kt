@@ -3,9 +3,8 @@ package com.example.books4me
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.books4me.API.BookAPI
+import com.example.books4me.API.BookServiceImpl
 import com.example.books4me.navigation.Navigation
-import com.example.books4me.screens.LandingPageScreen
 import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
@@ -15,12 +14,20 @@ class MainActivity : ComponentActivity() {
             Navigation()
         }
 
-        val api = BookAPI()
+//        val bookService = BookServiceImpl()
+//
+//        val books = runBlocking {
+//            bookService.searchBooksByTitle("Harry+Potter+and+the+Chamber+of+Secrets")
+//        }
+//
+//        books.forEach { println(it) }
 
-        val body = runBlocking {
-            println("inside")
-            api.foo()
-        }
+//        val api = BookAPI()
+//
+//        val body = runBlocking {
+//            println("inside")
+//            api.foo()
+//        }
 
 //        var body = ""
 //        CoroutineScope(Dispatchers.Default).launch {
@@ -28,6 +35,6 @@ class MainActivity : ComponentActivity() {
 //            println("inside")
 //        }
 
-        println("outside")
+//        println("outside")
     }
 }

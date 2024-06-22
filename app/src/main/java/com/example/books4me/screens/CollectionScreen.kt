@@ -15,7 +15,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReusableContent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,7 +27,7 @@ import com.example.books4me.components.AppBottomNavigation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReadlistScreen(navController: NavHostController) {
+fun CollectionScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -39,16 +38,15 @@ fun ReadlistScreen(navController: NavHostController) {
             AppBottomNavigation(navController = navController)
         }
     ) { innerPadding ->
-        ReadlistScreenContent(
-            Modifier
-                .padding(innerPadding)
-                .background(Color.Yellow)
-                .fillMaxHeight())
+        CollectionScreenContent(modifier =  Modifier
+            .padding(innerPadding)
+            .background(Color.Yellow)
+            .fillMaxHeight())
     }
 }
 
 @Composable
-fun ReadlistScreenContent(modifier: Modifier) {
+fun CollectionScreenContent(modifier: Modifier) {
     var searchText by remember { mutableStateOf("") }
 
     Column(modifier = modifier) {
@@ -65,7 +63,7 @@ fun ReadlistScreenContent(modifier: Modifier) {
             }
         )
         Text(
-            text = "Readlist Screen",
+            text = "Collection Screen",
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp))

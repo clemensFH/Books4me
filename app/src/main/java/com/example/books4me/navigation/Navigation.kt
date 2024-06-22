@@ -13,10 +13,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.books4me.screens.CollectionScreenContent
-import com.example.books4me.screens.LandingPageScreen
-import com.example.books4me.screens.PlanToReadScreenContent
-import com.example.books4me.screens.ReadlistScreenContent
+import com.example.books4me.screens.CollectionScreen
+import com.example.books4me.screens.HomeScreen
+import com.example.books4me.screens.PlanToReadScreen
+import com.example.books4me.screens.ReadlistScreen
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object Home : Screen("home", "Home", Icons.Default.Home)
@@ -28,52 +28,17 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    /*Scaffold(
-        bottomBar = { BottomNavigationBar(navController) }
-    ) { innerPadding ->*/
-        NavHost(
-            navController = navController,
-            startDestination = Screen.Home.route,
-            //modifier = Modifier.padding(innerPadding)
-        ) {
-            composable(Screen.Home.route) { LandingPageScreen() }
-            composable(Screen.Readlist.route) { ReadlistScreenContent() }
-            composable(Screen.PlanToRead.route) { PlanToReadScreenContent() }
-            composable(Screen.Collection.route) { CollectionScreenContent() }
-        }
-    }
 
-
-/*@Composable
-fun BottomNavigationBar(navController: NavHostController) {
-    val items = listOf(
-        Screen.Home,
-        Screen.Readlist,
-        Screen.PlanToRead,
-        Screen.Collection
-    )
-    NavigationBar {
-        val currentRoute = currentRoute(navController)
-        items.forEach { screen ->
-            NavigationBarItem(
-                icon = { Icon(screen.icon, contentDescription = screen.title) },
-                label = { Text(screen.title) },
-                selected = currentRoute == screen.route,
-                onClick = {
-                    if (currentRoute != screen.route) {
-                        navController.navigate(screen.route) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-                }
-            )
-        }
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Home.route,
+    ) {
+        composable(Screen.Home.route) { HomeScreen(navController) }
+        composable(Screen.Readlist.route) { ReadlistScreen(navController) }
+        composable(Screen.PlanToRead.route) { PlanToReadScreen(navController) }
+        composable(Screen.Collection.route) { CollectionScreen(navController) }
     }
-}*/
+}
 
 @Composable
 fun currentRoute(navController: NavHostController): String? {

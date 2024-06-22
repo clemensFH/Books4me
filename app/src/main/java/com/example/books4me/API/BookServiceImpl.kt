@@ -19,10 +19,10 @@ class BookServiceImpl : BookService {
 
     private fun concatFirstThree(list: List<String>): String {
         return when (list.size) {
-            0 -> "" // Return an empty string if the list is empty or has only one element
+            0 -> ""
             1 -> list[0]
-            2 -> "${list[0]}, ${list[1]}" // Concatenate the first two elements
-            else -> "${list[0]}, ${list[1]}, ${list[2]}" // Concatenate the first three elements
+            2 -> "${list[0]}, ${list[1]}"
+            else -> "${list[0]}, ${list[1]}, ${list[2]}"
         }
     }
 
@@ -49,9 +49,5 @@ class BookServiceImpl : BookService {
         }
 
         return books
-    }
-
-    override suspend fun getCover(): String {
-        TODO("Not yet implemented")
     }
 }

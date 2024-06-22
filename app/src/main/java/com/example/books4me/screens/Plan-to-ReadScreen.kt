@@ -1,8 +1,8 @@
 package com.example.books4me.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,72 +19,54 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.example.books4me.components.AppBottomNavigation
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlanToReadScreenContent() {
-    var selectedItem by remember { mutableStateOf(0) }
-    var searchText by remember { mutableStateOf("") }
-
+fun PlanToReadScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
-            Column {
-                CenterAlignedTopAppBar(
-                    title = { Text("Books4Me") }
-                )
-                TextField(
-                    value = searchText,
-                    onValueChange = { searchText = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    placeholder = { Text("Search...") },
-                    singleLine = true,
-                    leadingIcon = {
-                        Icon(Icons.Default.Search, contentDescription = "Search Icon")
-                    }
-                )
-            }
+            CenterAlignedTopAppBar(
+                title = { Text("Books4Me") }
+            )
         },
         bottomBar = {
-            BottomNavigation(selectedItem = selectedItem, onItemSelected = { selectedItem = it })
+            AppBottomNavigation(navController = navController)
         }
     ) { innerPadding ->
-        Column(
+        PlanToReadScreenContent(modifier =  Modifier
+            .padding(innerPadding)
+            .background(Color.Yellow)
+            .fillMaxHeight())
+    }
+}
+
+@Composable
+fun PlanToReadScreenContent(modifier: Modifier) {
+    var searchText by remember { mutableStateOf("") }
+
+    Column(modifier = modifier) {
+        TextField(
+            value = searchText,
+            onValueChange = { searchText = it },
             modifier = Modifier
-                .background(Color.Yellow)
-                .padding(innerPadding)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            when (selectedItem) {
-                0 -> HomeScreenContent()
-                1 -> Text(
-                    text = "Readlist Screen",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                )
-                2 -> Text(
-                    text = "Plan-to-Read Screen",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                )
-                3 -> Text(
-                    text = "Collection Screen",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                )
-                else -> Unit
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            placeholder = { Text("Search...") },
+            singleLine = true,
+            leadingIcon = {
+                Icon(Icons.Default.Search, contentDescription = "Search Icon")
             }
-        }
+        )
+        Text(
+            text = "Plan-to-Read Screen",
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp))
     }
 }
