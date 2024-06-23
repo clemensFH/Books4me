@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -56,16 +57,35 @@ fun ReadlistScreen(navController: NavHostController, bookViewModel: BookViewMode
             AppBottomNavigation(navController = navController)
         }
     ) { innerPadding ->
-        Column(
+        ReadlistScreenContent(
             modifier = Modifier
                 .padding(innerPadding)
                 .background(Color.Yellow)
-                .fillMaxHeight()
-        ) {
-            LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                items(bookViewModel.getReadList()) { book ->
-                    ReadListItem(book)
-                }
+                .fillMaxHeight(), bookViewModel
+        )
+    }
+}
+
+@Composable
+fun ReadlistScreenContent(modifier: Modifier, bookViewModel: BookViewModel) {
+    var searchText by remember { mutableStateOf("") }
+
+    Column(modifier = modifier) {
+        TextField(
+            value = searchText,
+            onValueChange = { searchText = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            placeholder = { Text("Search...") },
+            singleLine = true,
+            leadingIcon = {
+                Icon(Icons.Default.Search, contentDescription = "Search Icon")
+            }
+        )
+        LazyColumn {
+            items(bookViewModel.getReadList()) { book ->
+                ReadListItem(book)
             }
         }
     }
@@ -73,12 +93,13 @@ fun ReadlistScreen(navController: NavHostController, bookViewModel: BookViewMode
 
 @Composable
 fun ReadListItem(book: Book) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .border(BorderStroke(1.dp, Color.Gray))
-            .padding(8.dp)
+    println(book)
+    Card(modifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp)
+        .border(
+            BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(8.dp)
+        )
     ) {
         Row(
             modifier = Modifier.padding(8.dp)
@@ -104,31 +125,5 @@ fun ReadListItem(book: Book) {
                 Text(text = book.subject ?: "No Subject")
             }
         }
-    }
-}
-
-@Composable
-fun ReadlistScreenContent(modifier: Modifier, bookViewModel: BookViewModel) {
-    var searchText by remember { mutableStateOf("") }
-
-    Column(modifier = modifier) {
-        TextField(
-            value = searchText,
-            onValueChange = { searchText = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            placeholder = { Text("Search...") },
-            singleLine = true,
-            leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = "Search Icon")
-            }
-        )
-        Text(
-            text = "Readlist Screen",
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        )
     }
 }

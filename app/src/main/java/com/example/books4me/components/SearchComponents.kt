@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
@@ -60,8 +61,12 @@ fun BookItem(book: Book, navController: NavHostController, bookViewModel: BookVi
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .border(BorderStroke(1.dp, Color.Gray))
+            .padding(8.dp)
+            .border(
+                BorderStroke(1.dp, Color.Gray),
+                shape = RoundedCornerShape(8.dp)
+            ),
+        shape = RoundedCornerShape(8.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)

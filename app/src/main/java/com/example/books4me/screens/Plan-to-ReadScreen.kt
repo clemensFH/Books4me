@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -55,16 +56,35 @@ fun PlanToReadScreen(navController: NavHostController, bookViewModel: BookViewMo
             AppBottomNavigation(navController = navController)
         }
     ) { innerPadding ->
-        Column(
+        PlanToReadScreenContent(
             modifier = Modifier
                 .padding(innerPadding)
                 .background(Color.Yellow)
-                .fillMaxHeight()
-        ) {
-            LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                items(bookViewModel.getPlanToReadList()) { book ->
-                    PlanToReadListItem(book)
-                }
+                .fillMaxHeight(), bookViewModel
+        )
+    }
+}
+
+@Composable
+fun PlanToReadScreenContent(modifier: Modifier, bookViewModel: BookViewModel) {
+    var searchText by remember { mutableStateOf("") }
+
+    Column(modifier = modifier) {
+        TextField(
+            value = searchText,
+            onValueChange = { searchText = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            placeholder = { Text("Search...") },
+            singleLine = true,
+            leadingIcon = {
+                Icon(Icons.Default.Search, contentDescription = "Search Icon")
+            }
+        )
+        LazyColumn {
+            items(bookViewModel.getPlanToReadList()) { book ->
+                PlanToReadListItem(book)
             }
         }
     }
@@ -76,8 +96,9 @@ fun PlanToReadListItem(book: Book) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .border(BorderStroke(1.dp, Color.Gray))
-            .padding(8.dp)
+            .border(
+                BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(8.dp)
+            )
     ) {
         Row(
             modifier = Modifier.padding(8.dp)
@@ -103,30 +124,5 @@ fun PlanToReadListItem(book: Book) {
                 Text(text = book.subject ?: "No Subject")
             }
         }
-    }
-}
-
-@Composable
-fun PlanToReadScreenContent(modifier: Modifier) {
-    var searchText by remember { mutableStateOf("") }
-
-    Column(modifier = modifier) {
-        TextField(
-            value = searchText,
-            onValueChange = { searchText = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            placeholder = { Text("Search...") },
-            singleLine = true,
-            leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = "Search Icon")
-            }
-        )
-        Text(
-            text = "Plan-to-Read Screen",
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp))
     }
 }

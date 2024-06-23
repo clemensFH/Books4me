@@ -12,12 +12,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -40,6 +42,11 @@ import com.example.books4me.API.dto.Book
 import com.example.books4me.R
 import com.example.books4me.components.AppBottomNavigation
 import com.example.books4me.viewmodels.BookViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.lang.Exception
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,16 +61,39 @@ fun CollectionScreen(navController: NavHostController, bookViewModel: BookViewMo
             AppBottomNavigation(navController = navController)
         }
     ) { innerPadding ->
-        Column(
+        CollectionScreenContent(
             modifier = Modifier
                 .padding(innerPadding)
                 .background(Color.Yellow)
-                .fillMaxHeight()
-        ) {
-            LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                items(bookViewModel.getCollectionList()) { book ->
-                    CollectionListItem(book)
+                .fillMaxHeight(), bookViewModel
+        )
+    }
+}
+
+@Composable
+fun CollectionScreenContent(modifier: Modifier, bookViewModel: BookViewModel) {
+    var searchText by remember { mutableStateOf("") }
+
+    Column(modifier = modifier) {
+        Row {
+            TextField(
+                value = searchText,
+                onValueChange = { searchText = it },
+                modifier = Modifier
+                    .padding(horizontal = 16.dp),
+                placeholder = { Text("Search...") },
+                singleLine = true,
+                leadingIcon = {
+                    Icon(Icons.Default.Search, contentDescription = "Search Icon")
                 }
+            )
+            OutlinedButton(onClick = {}) {
+                Text(text = "Search")
+            }
+        }
+        LazyColumn {
+            items(bookViewModel.getCollectionList()) { book ->
+                CollectionListItem(book)
             }
         }
     }
@@ -75,8 +105,10 @@ fun CollectionListItem(book: Book) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .border(BorderStroke(1.dp, Color.Gray))
-            .padding(8.dp)
+            .border(
+                BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(8.dp)
+            )
+        ,
     ) {
         Row(
             modifier = Modifier.padding(8.dp)
@@ -102,30 +134,5 @@ fun CollectionListItem(book: Book) {
                 Text(text = book.subject ?: "No Subject")
             }
         }
-    }
-}
-
-@Composable
-fun CollectionScreenContent(modifier: Modifier) {
-    var searchText by remember { mutableStateOf("") }
-
-    Column(modifier = modifier) {
-        TextField(
-            value = searchText,
-            onValueChange = { searchText = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            placeholder = { Text("Search...") },
-            singleLine = true,
-            leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = "Search Icon")
-            }
-        )
-        Text(
-            text = "Collection Screen",
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp))
     }
 }
