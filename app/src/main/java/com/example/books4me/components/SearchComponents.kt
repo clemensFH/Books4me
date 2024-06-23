@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -94,8 +95,8 @@ fun BookItem(book: Book, navController: NavHostController, bookViewModel: BookVi
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Text(text = book.title ?: "Unknown Title", fontSize = 16.sp)
-                    Text(text = book.authorName ?: "Unknown Author", fontSize = 14.sp)
+                    Text(text = book.title ?: "Unknown Title", fontSize = 19.sp, fontWeight = FontWeight.Bold)
+                    Text(text = book.authorName ?: "Unknown Author", fontSize = 17.sp)
                     Text(text = book.subject ?: "No Subject", fontSize = 14.sp)
                 }
             }
