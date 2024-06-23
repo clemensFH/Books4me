@@ -128,11 +128,7 @@ fun ReadlistScreenContent(modifier: Modifier, bookViewModel: BookViewModel) {
             text = "Readlist Screen",
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp))
-        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-            bookViewModel.getReadList().forEach { book ->
-                Text(text = book.title ?: "Unknown title")
-            }
-        }
+                .padding(16.dp)
+        )
     }
 }
