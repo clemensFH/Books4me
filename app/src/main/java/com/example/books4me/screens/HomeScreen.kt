@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.books4me.API.BookServiceImpl
@@ -18,6 +19,7 @@ import com.example.books4me.API.dto.BookSearchResult
 import com.example.books4me.components.AppBottomNavigation
 import com.example.books4me.components.SearchResultList
 import com.example.books4me.viewmodels.BookViewModel
+import com.example.books4me.worker.BookDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,11 +55,13 @@ fun HomeScreenContent(
     modifier: Modifier,
     navController: NavHostController,
     bookViewModel: BookViewModel
+
 ) {
     var searchText by remember { mutableStateOf("") }
     var books by remember { mutableStateOf(emptyList<BookSearchResult>()) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    val db = BookDatabase.getDatabase(LocalContext.current)
 
     val bookService = BookServiceImpl()
 
