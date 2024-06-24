@@ -2,12 +2,10 @@ package com.example.books4me.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,15 +14,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -39,26 +30,26 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.books4me.API.dto.Book
+import com.example.books4me.API.dto.BookSearchResult
 import com.example.books4me.R
 import com.example.books4me.viewmodels.BookViewModel
 
 
 @Composable
 fun SearchResultList(
-    results: List<Book>,
+    results: List<BookSearchResult>,
     navController: NavHostController,
     bookViewModel: BookViewModel
 ) {
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         items(results) { book ->
-            BookItem(book = book, navController = navController, bookViewModel = bookViewModel)
+            BookItem(bookSearchResult = book, navController = navController, bookViewModel = bookViewModel)
         }
     }
 }
 
 @Composable
-fun BookItem(book: Book, navController: NavHostController, bookViewModel: BookViewModel) {
+fun BookItem(bookSearchResult: BookSearchResult, navController: NavHostController, bookViewModel: BookViewModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -76,11 +67,11 @@ fun BookItem(book: Book, navController: NavHostController, bookViewModel: BookVi
                 modifier = Modifier.fillMaxWidth()
             ) {
                 AsyncImage(
-                    model = if (book.coverId == null)
+                    model = if (bookSearchResult.coverId == null)
                         R.drawable.error
                     else
                         ImageRequest.Builder(LocalContext.current)
-                            .data("https://covers.openlibrary.org/b/id/${book.coverId}-L.jpg")
+                            .data("https://covers.openlibrary.org/b/id/${bookSearchResult.coverId}-L.jpg")
                             .crossfade(true)
                             .build(),
                     placeholder = painterResource(id = R.drawable.loading),
@@ -95,9 +86,9 @@ fun BookItem(book: Book, navController: NavHostController, bookViewModel: BookVi
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Text(text = book.title ?: "Unknown Title", fontSize = 19.sp, fontWeight = FontWeight.Bold)
-                    Text(text = book.authorName ?: "Unknown Author", fontSize = 17.sp)
-                    Text(text = book.subject ?: "No Subject", fontSize = 14.sp)
+                    Text(text = bookSearchResult.title ?: "Unknown Title", fontSize = 19.sp, fontWeight = FontWeight.Bold)
+                    Text(text = bookSearchResult.authorName ?: "Unknown Author", fontSize = 17.sp)
+                    Text(text = bookSearchResult.subject ?: "No Subject", fontSize = 14.sp)
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -107,7 +98,7 @@ fun BookItem(book: Book, navController: NavHostController, bookViewModel: BookVi
             ) {
                 OutlinedButton(
                     onClick = {
-                        bookViewModel.addToReadList(book)
+                        bookViewModel.addToReadList(bookSearchResult)
                         navController.navigate("readlist")
                     },
                     modifier = Modifier
@@ -124,7 +115,7 @@ fun BookItem(book: Book, navController: NavHostController, bookViewModel: BookVi
                 }
                 OutlinedButton(
                     onClick = {
-                        bookViewModel.addToPlanToRead(book)
+                        bookViewModel.addToPlanToRead(bookSearchResult)
                         navController.navigate("plan_to_read")
                     },
                     modifier = Modifier
@@ -147,7 +138,7 @@ fun BookItem(book: Book, navController: NavHostController, bookViewModel: BookVi
             ) {
                 OutlinedButton(
                     onClick = {
-                        bookViewModel.addToCollection(book)
+                        bookViewModel.addToCollection(bookSearchResult)
                         navController.navigate("collection")
                     },
                     modifier = Modifier

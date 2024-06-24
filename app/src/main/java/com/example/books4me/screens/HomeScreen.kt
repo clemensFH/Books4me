@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.books4me.API.BookServiceImpl
-import com.example.books4me.API.dto.Book
+import com.example.books4me.API.dto.BookSearchResult
 import com.example.books4me.components.AppBottomNavigation
 import com.example.books4me.components.SearchResultList
 import com.example.books4me.viewmodels.BookViewModel
@@ -55,7 +55,7 @@ fun HomeScreenContent(
     bookViewModel: BookViewModel
 ) {
     var searchText by remember { mutableStateOf("") }
-    var books by remember { mutableStateOf(emptyList<Book>()) }
+    var books by remember { mutableStateOf(emptyList<BookSearchResult>()) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 

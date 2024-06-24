@@ -1,6 +1,6 @@
 package com.example.books4me.API
 
-import com.example.books4me.API.dto.Book
+import com.example.books4me.API.dto.BookSearchResult
 import com.example.books4me.API.dto.APIresponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -35,7 +35,7 @@ class BookAPI {
 //                subject = it.subject_facet[0]
 //            }
 
-            Book(
+            BookSearchResult(
                 authorName = it.author_name?.firstOrNull().orEmpty(),
                 publishDate = it.publish_date?.firstOrNull().orEmpty(),
                 title = it.title.orEmpty(),

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,7 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
@@ -41,15 +39,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.books4me.API.BookServiceImpl
-import com.example.books4me.API.dto.Book
+import com.example.books4me.API.dto.BookSearchResult
 import com.example.books4me.R
 import com.example.books4me.components.AppBottomNavigation
 import com.example.books4me.viewmodels.BookViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,11 +69,9 @@ fun CollectionScreen(navController: NavHostController, bookViewModel: BookViewMo
 @Composable
 fun CollectionScreenContent(modifier: Modifier, bookViewModel: BookViewModel) {
     var searchText by remember { mutableStateOf("") }
-    var books by remember { mutableStateOf(emptyList<Book>()) }
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var books by remember { mutableStateOf(emptyList<BookSearchResult>()) }
 
-    val bookService = BookServiceImpl()
+    books = bookViewModel.getCollectionList()
 
     Column(modifier = modifier) {
         Row {
@@ -97,22 +88,7 @@ fun CollectionScreenContent(modifier: Modifier, bookViewModel: BookViewModel) {
                 }
             )
             OutlinedButton(onClick = {
-                isLoading = true
-                errorMessage = null
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        val result = bookService.searchBooksByTitle(searchText)
-                        withContext(Dispatchers.Main) {
-                            books = result
-                            isLoading = false
-                        }
-                    } catch (e: Exception) {
-                        withContext(Dispatchers.Main) {
-                            isLoading = false
-                            errorMessage = "Failed to load books: ${e.message}"
-                        }
-                    }
-                }
+
             }) {
                 Text(text = "Search")
             }
@@ -126,21 +102,12 @@ fun CollectionScreenContent(modifier: Modifier, bookViewModel: BookViewModel) {
             contentAlignment = Alignment.Center
         ) {
             Spacer(modifier = Modifier.padding(16.dp))
-            when {
-                isLoading -> {
-                    CircularProgressIndicator()
-                }
-                errorMessage != null -> {
-                    Text(text = errorMessage ?: "Unknown error")
-                }
-                books.isEmpty() -> {
-                    Text(text = "No search results")
-                }
-                else -> {
-                    LazyColumn {
-                        items(books) { book ->
-                            CollectionListItem(book)
-                        }
+            if (books.isEmpty()) {
+                Text(text = "No search results")
+            } else {
+                LazyColumn {
+                    items(books) { book ->
+                        CollectionListItem(book)
                     }
                 }
             }
@@ -149,7 +116,7 @@ fun CollectionScreenContent(modifier: Modifier, bookViewModel: BookViewModel) {
 }
 
 @Composable
-fun CollectionListItem(book: Book) {
+fun CollectionListItem(book: BookSearchResult) {
     Card(
         modifier = Modifier
             .fillMaxWidth()

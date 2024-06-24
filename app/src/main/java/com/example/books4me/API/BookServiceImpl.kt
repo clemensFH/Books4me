@@ -1,7 +1,7 @@
 package com.example.books4me.API
 
 import com.example.books4me.API.dto.APIresponse
-import com.example.books4me.API.dto.Book
+import com.example.books4me.API.dto.BookSearchResult
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -26,7 +26,7 @@ class BookServiceImpl : BookService {
         }
     }
 
-    override suspend fun searchBooksByTitle(title: String): List<Book> {
+    override suspend fun searchBooksByTitle(title: String): List<BookSearchResult> {
         val response: HttpResponse = client.get(HttpRoutes.BOOKS) {
             url {
                 parameters.append("title", title)
@@ -36,7 +36,7 @@ class BookServiceImpl : BookService {
         val bookResponses = jsonParser.decodeFromString<APIresponse>(response.body())
 
         val books = bookResponses.docs.map {
-            Book(
+            BookSearchResult(
                 authorName = it.author_name?.firstOrNull().orEmpty(),
                 publishDate = it.publish_date?.firstOrNull().orEmpty(),
                 title = it.title.orEmpty(),

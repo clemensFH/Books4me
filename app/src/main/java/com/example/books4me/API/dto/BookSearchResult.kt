@@ -1,6 +1,6 @@
 package com.example.books4me.API.dto
 
-data class Book(
+data class BookSearchResult(
     val title: String?,
     val authorName: String,
     val subject: String,
