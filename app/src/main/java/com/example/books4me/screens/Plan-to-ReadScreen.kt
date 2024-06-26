@@ -25,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,12 +43,14 @@ import coil.request.ImageRequest
 import com.example.books4me.API.dto.BookSearchResult
 import com.example.books4me.R
 import com.example.books4me.components.AppBottomNavigation
+import com.example.books4me.model.Book
 import com.example.books4me.viewmodels.BookViewModel
+import com.example.books4me.viewmodels.PlanToReadlistViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlanToReadScreen(navController: NavHostController, bookViewModel: BookViewModel) {
+fun PlanToReadScreen(navController: NavHostController, viewModel: PlanToReadlistViewModel) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -62,17 +65,16 @@ fun PlanToReadScreen(navController: NavHostController, bookViewModel: BookViewMo
             modifier = Modifier
                 .padding(innerPadding)
                 .background(Color.Yellow)
-                .fillMaxHeight(), bookViewModel
+                .fillMaxHeight(), viewModel
         )
     }
 }
 
 @Composable
-fun PlanToReadScreenContent(modifier: Modifier, bookViewModel: BookViewModel) {
+fun PlanToReadScreenContent(modifier: Modifier, viewModel: PlanToReadlistViewModel) {
     var searchText by remember { mutableStateOf("") }
-    var books by remember { mutableStateOf(emptyList<BookSearchResult>()) }
 
-    books = bookViewModel.getPlanToReadList()
+    val books by viewModel.books.collectAsState()
 
     Column(modifier = modifier) {
         Row {
@@ -117,7 +119,7 @@ fun PlanToReadScreenContent(modifier: Modifier, bookViewModel: BookViewModel) {
 }
 
 @Composable
-fun PlanToReadListItem(book: BookSearchResult) {
+fun PlanToReadListItem(book: Book) {
     Card(
         modifier = Modifier
             .fillMaxWidth()

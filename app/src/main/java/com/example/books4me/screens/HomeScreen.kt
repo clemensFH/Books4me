@@ -13,13 +13,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.books4me.API.BookServiceImpl
 import com.example.books4me.API.dto.BookSearchResult
 import com.example.books4me.components.AppBottomNavigation
 import com.example.books4me.components.SearchResultList
 import com.example.books4me.viewmodels.BookViewModel
+import com.example.books4me.viewmodels.BookViewModelFactory
+import com.example.books4me.viewmodels.HomeScreenViewModel
+import com.example.books4me.viewmodels.ReadlistViewModel
 import com.example.books4me.worker.BookDatabase
+import com.example.books4me.worker.BookRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,7 +33,7 @@ import java.lang.Exception
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavHostController, bookViewModel: BookViewModel) {
+fun HomeScreen(navController: NavHostController, viewModel: HomeScreenViewModel) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -45,7 +50,7 @@ fun HomeScreen(navController: NavHostController, bookViewModel: BookViewModel) {
                 .background(Color.Yellow)
                 .fillMaxHeight(),
             navController,
-            bookViewModel
+            viewModel
         )
     }
 }
@@ -54,14 +59,12 @@ fun HomeScreen(navController: NavHostController, bookViewModel: BookViewModel) {
 fun HomeScreenContent(
     modifier: Modifier,
     navController: NavHostController,
-    bookViewModel: BookViewModel
-
+    viewModel: HomeScreenViewModel
 ) {
     var searchText by remember { mutableStateOf("") }
     var books by remember { mutableStateOf(emptyList<BookSearchResult>()) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    val db = BookDatabase.getDatabase(LocalContext.current)
 
     val bookService = BookServiceImpl()
 
@@ -123,7 +126,7 @@ fun HomeScreenContent(
                     SearchResultList(
                         results = books,
                         navController = navController,
-                        bookViewModel = bookViewModel
+                        viewModel = viewModel
                     )
                 }
             }

@@ -25,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,11 +43,14 @@ import coil.request.ImageRequest
 import com.example.books4me.API.dto.BookSearchResult
 import com.example.books4me.R
 import com.example.books4me.components.AppBottomNavigation
+import com.example.books4me.model.Book
 import com.example.books4me.viewmodels.BookViewModel
+import com.example.books4me.viewmodels.CollectionListViewModel
+import com.example.books4me.viewmodels.PlanToReadlistViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CollectionScreen(navController: NavHostController, bookViewModel: BookViewModel) {
+fun CollectionScreen(navController: NavHostController, viewModel: CollectionListViewModel) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -61,17 +65,16 @@ fun CollectionScreen(navController: NavHostController, bookViewModel: BookViewMo
             modifier = Modifier
                 .padding(innerPadding)
                 .background(Color.Yellow)
-                .fillMaxHeight(), bookViewModel
+                .fillMaxHeight(), viewModel
         )
     }
 }
 
 @Composable
-fun CollectionScreenContent(modifier: Modifier, bookViewModel: BookViewModel) {
+fun CollectionScreenContent(modifier: Modifier, viewModel: CollectionListViewModel) {
     var searchText by remember { mutableStateOf("") }
-    var books by remember { mutableStateOf(emptyList<BookSearchResult>()) }
 
-    books = bookViewModel.getCollectionList()
+    val books by viewModel.books.collectAsState()
 
     Column(modifier = modifier) {
         Row {
@@ -116,7 +119,7 @@ fun CollectionScreenContent(modifier: Modifier, bookViewModel: BookViewModel) {
 }
 
 @Composable
-fun CollectionListItem(book: BookSearchResult) {
+fun CollectionListItem(book: Book) {
     Card(
         modifier = Modifier
             .fillMaxWidth()

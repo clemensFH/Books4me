@@ -7,20 +7,20 @@ import androidx.room.PrimaryKey
 @Entity(tableName= "books")
 data class Book(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
-    val title: String?,
-    val authorName: String,
-    val subject: String,
-    val publishDate: String,
-    val publisher: String,
-    val pages: Int?,
-    val isbn: String,
-    val coverId: Long?,
-    val rating: Int,
-    val comment: String,
-    val isInReadlist: Boolean,
-    val isInCollectionlist: Boolean,
-    val isInPlanToReadlist: Boolean
+    var id: Long = 0,
+    var title: String?,
+    var authorName: String,
+    var subject: String,
+    var publishDate: String,
+    var publisher: String,
+    var pages: Int?,
+    var isbn: String,
+    var coverId: Long?,
+    var rating: Int,
+    var comment: String,
+    var isInReadlist: Boolean,
+    var isInCollectionlist: Boolean,
+    var isInPlanToReadlist: Boolean
 )
 
 

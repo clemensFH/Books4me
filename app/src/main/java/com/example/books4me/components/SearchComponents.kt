@@ -33,23 +33,27 @@ import coil.request.ImageRequest
 import com.example.books4me.API.dto.BookSearchResult
 import com.example.books4me.R
 import com.example.books4me.viewmodels.BookViewModel
+import com.example.books4me.viewmodels.HomeScreenViewModel
+import com.example.books4me.viewmodels.ReadlistViewModel
 
 
 @Composable
 fun SearchResultList(
     results: List<BookSearchResult>,
     navController: NavHostController,
-    bookViewModel: BookViewModel
+    viewModel: HomeScreenViewModel
 ) {
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         items(results) { book ->
-            BookItem(bookSearchResult = book, navController = navController, bookViewModel = bookViewModel)
+            BookItem(bookSearchResult = book, navController = navController, viewModel = viewModel)
         }
     }
 }
 
 @Composable
-fun BookItem(bookSearchResult: BookSearchResult, navController: NavHostController, bookViewModel: BookViewModel) {
+fun BookItem(bookSearchResult: BookSearchResult,
+             navController: NavHostController,
+             viewModel: HomeScreenViewModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -98,7 +102,7 @@ fun BookItem(bookSearchResult: BookSearchResult, navController: NavHostControlle
             ) {
                 OutlinedButton(
                     onClick = {
-                        bookViewModel.addToReadList(bookSearchResult)
+                        viewModel.addToReadlist(bookSearchResult)
                         navController.navigate("readlist")
                     },
                     modifier = Modifier
@@ -115,7 +119,7 @@ fun BookItem(bookSearchResult: BookSearchResult, navController: NavHostControlle
                 }
                 OutlinedButton(
                     onClick = {
-                        bookViewModel.addToPlanToRead(bookSearchResult)
+                        viewModel.addToPlanToReadlist(bookSearchResult)
                         navController.navigate("plan_to_read")
                     },
                     modifier = Modifier
@@ -138,7 +142,7 @@ fun BookItem(bookSearchResult: BookSearchResult, navController: NavHostControlle
             ) {
                 OutlinedButton(
                     onClick = {
-                        bookViewModel.addToCollection(bookSearchResult)
+                        viewModel.addToCollection(bookSearchResult)
                         navController.navigate("collection")
                     },
                     modifier = Modifier
