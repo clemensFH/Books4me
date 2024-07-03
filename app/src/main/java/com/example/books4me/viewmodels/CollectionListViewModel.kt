@@ -12,6 +12,8 @@ import kotlinx.coroutines.launch
 class CollectionListViewModel(private val repository: BookRepository) : ViewModel(){
     private val _books = MutableStateFlow(listOf<Book>())
     val books: StateFlow<List<Book>> = _books.asStateFlow()
+    private val _searchResults = MutableStateFlow(listOf<Book>())
+    val searchResults: StateFlow<List<Book>> = _searchResults.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -41,5 +43,16 @@ class CollectionListViewModel(private val repository: BookRepository) : ViewMode
         viewModelScope.launch {
             repository.updateBook(book)
         }
+    }
+
+    fun searchBooksByTitle(query: String) {
+        val filteredBooks = if (query.isBlank()) {
+            emptyList()
+        } else {
+            _books.value.filter { book ->
+                book.title?.contains(query, ignoreCase = true) ?: false
+            }
+        }
+        _searchResults.value = filteredBooks
     }
 }

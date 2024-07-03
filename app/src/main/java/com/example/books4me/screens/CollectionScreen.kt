@@ -73,8 +73,8 @@ fun CollectionScreen(navController: NavHostController, viewModel: CollectionList
 @Composable
 fun CollectionScreenContent(modifier: Modifier, viewModel: CollectionListViewModel) {
     var searchText by remember { mutableStateOf("") }
-
     val books by viewModel.books.collectAsState()
+    val searchResults by viewModel.books.collectAsState()
 
     Column(modifier = modifier) {
         Row {
@@ -91,7 +91,7 @@ fun CollectionScreenContent(modifier: Modifier, viewModel: CollectionListViewMod
                 }
             )
             OutlinedButton(onClick = {
-
+                viewModel.searchBooksByTitle(searchText)
             }) {
                 Text(text = "Search")
             }
@@ -105,12 +105,17 @@ fun CollectionScreenContent(modifier: Modifier, viewModel: CollectionListViewMod
             contentAlignment = Alignment.Center
         ) {
             Spacer(modifier = Modifier.padding(16.dp))
-            if (books.isEmpty()) {
+            val displayBooks = if (searchText.isBlank()) {
+                books
+            } else {
+                searchResults
+            }
+            if (displayBooks.isEmpty()) {
                 Text(text = "No search results")
             } else {
                 LazyColumn {
-                    items(books) { book ->
-                        CollectionListItem(book)
+                    items(displayBooks) { book ->
+                        viewModel.removeFromCollection(book)
                     }
                 }
             }

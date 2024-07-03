@@ -29,6 +29,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -80,7 +81,8 @@ fun ReadlistScreen(navController: NavHostController, viewModel: ReadlistViewMode
 fun ReadlistScreenContent(modifier: Modifier, viewModel: ReadlistViewModel) {
     var searchText by remember { mutableStateOf("") }
 
-    val books by viewModel.books.collectAsState()
+    val books by viewModel.books.observeAsState(emptyList())
+    val searchResults by viewModel.searchResults.observeAsState(emptyList())
 
     Column(modifier = modifier) {
         Row {
@@ -97,7 +99,7 @@ fun ReadlistScreenContent(modifier: Modifier, viewModel: ReadlistViewModel) {
                 }
             )
             OutlinedButton(onClick = {
-
+                viewModel.searchBooksByTitle(searchText)
             }) {
                 Text(text = "Search")
             }
@@ -111,11 +113,16 @@ fun ReadlistScreenContent(modifier: Modifier, viewModel: ReadlistViewModel) {
             contentAlignment = Alignment.Center
         ) {
             Spacer(modifier = Modifier.padding(16.dp))
-            if (books.isEmpty()) {
+            val displayBooks = if (searchText.isBlank()) {
+                books
+            } else {
+                searchResults
+            }
+            if (displayBooks.isEmpty()) {
                 Text(text = "No search results")
             } else {
                 LazyColumn {
-                    items(books) { book ->
+                    items(displayBooks) { book ->
                         ReadListItem(book,  onButtonClick = { bookToMove ->
                             viewModel.moveToCollection(bookToMove)
                         })

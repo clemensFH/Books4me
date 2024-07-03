@@ -27,6 +27,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -73,8 +74,8 @@ fun PlanToReadScreen(navController: NavHostController, viewModel: PlanToReadlist
 @Composable
 fun PlanToReadScreenContent(modifier: Modifier, viewModel: PlanToReadlistViewModel) {
     var searchText by remember { mutableStateOf("") }
-
-    val books by viewModel.books.collectAsState()
+    val books by viewModel.books.observeAsState()
+    val searchResults by viewModel.searchResults.observeAsState()
 
     Column(modifier = modifier) {
         Row {
@@ -91,7 +92,7 @@ fun PlanToReadScreenContent(modifier: Modifier, viewModel: PlanToReadlistViewMod
                 }
             )
             OutlinedButton(onClick = {
-
+                viewModel.searchBooksByTitle(searchText)
             }) {
                 Text(text = "Search")
             }
@@ -105,18 +106,26 @@ fun PlanToReadScreenContent(modifier: Modifier, viewModel: PlanToReadlistViewMod
             contentAlignment = Alignment.Center
         ) {
             Spacer(modifier = Modifier.padding(16.dp))
-            if (books.isEmpty()) {
-                Text(text = "No search results")
+            val displayBooks = if (searchText.isBlank()) {
+                books
             } else {
-                LazyColumn {
-                    items(books) { book ->
-                        PlanToReadListItem(book)
+                searchResults
+            }
+            if (displayBooks != null) {
+                if (displayBooks.isEmpty()) {
+                    Text(text = "No search results")
+                } else {
+                    LazyColumn {
+                        items(displayBooks) { book ->
+                            PlanToReadListItem(book)
+                        }
                     }
                 }
             }
         }
     }
 }
+
 
 @Composable
 fun PlanToReadListItem(book: Book) {
