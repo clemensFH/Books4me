@@ -1,5 +1,7 @@
 package com.example.books4me.viewmodels
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.books4me.model.Book
@@ -10,10 +12,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CollectionListViewModel(private val repository: BookRepository) : ViewModel(){
-    private val _books = MutableStateFlow(listOf<Book>())
-    val books: StateFlow<List<Book>> = _books.asStateFlow()
-    private val _searchResults = MutableStateFlow(listOf<Book>())
-    val searchResults: StateFlow<List<Book>> = _searchResults.asStateFlow()
+    private val _books = MutableLiveData<List<Book>>(emptyList())
+    val books: LiveData<List<Book>> = _books
+    private val _searchResults = MutableLiveData<List<Book>>(emptyList())
+    val searchResults: LiveData<List<Book>> = _searchResults
 
     init {
         viewModelScope.launch {
@@ -49,9 +51,9 @@ class CollectionListViewModel(private val repository: BookRepository) : ViewMode
         val filteredBooks = if (query.isBlank()) {
             emptyList()
         } else {
-            _books.value.filter { book ->
+            _books.value?.filter { book ->
                 book.title?.contains(query, ignoreCase = true) ?: false
-            }
+            } ?: emptyList()
         }
         _searchResults.value = filteredBooks
     }

@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -135,7 +136,6 @@ fun ReadlistScreenContent(modifier: Modifier, viewModel: ReadlistViewModel) {
 
 @Composable
 fun ReadListItem(book: Book, onButtonClick: (Book) -> Unit) {
-    println(book)
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -177,8 +177,22 @@ fun ReadListItem(book: Book, onButtonClick: (Book) -> Unit) {
                     .width(128.dp)
             ) {
                 Text(
-                    text = "To Coll",
-                    style = androidx.compose.ui.text.TextStyle(
+                    text = "Remove",
+                    style = TextStyle(
+                        fontSize = 18.sp
+                    )
+                )
+            }
+            OutlinedButton(
+                onClick = { onButtonClick(book) },
+                modifier = Modifier
+                    .padding(4.dp)
+                    .height(54.dp)
+                    .width(128.dp)
+            ) {
+                Text(
+                    text = "To Collection",
+                    style = TextStyle(
                         fontSize = 18.sp
                     )
                 )

@@ -18,9 +18,9 @@ data class Book(
     var coverId: Long?,
     var rating: Int,
     var comment: String,
-    var isInReadlist: Boolean,
-    var isInCollectionlist: Boolean,
-    var isInPlanToReadlist: Boolean
+    var isInReadlist: Boolean = false,
+    var isInCollectionlist: Boolean = false,
+    var isInPlanToReadlist: Boolean = false
 )
 
 

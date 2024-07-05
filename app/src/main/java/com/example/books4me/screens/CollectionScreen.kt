@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +29,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -36,7 +39,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -73,8 +78,9 @@ fun CollectionScreen(navController: NavHostController, viewModel: CollectionList
 @Composable
 fun CollectionScreenContent(modifier: Modifier, viewModel: CollectionListViewModel) {
     var searchText by remember { mutableStateOf("") }
-    val books by viewModel.books.collectAsState()
-    val searchResults by viewModel.books.collectAsState()
+
+    val books by viewModel.books.observeAsState(emptyList())
+    val searchResults by viewModel.searchResults.observeAsState(emptyList())
 
     Column(modifier = modifier) {
         Row {
@@ -115,7 +121,9 @@ fun CollectionScreenContent(modifier: Modifier, viewModel: CollectionListViewMod
             } else {
                 LazyColumn {
                     items(displayBooks) { book ->
-                        viewModel.removeFromCollection(book)
+                        CollectionListItem(book, onButtonClick = { bookToMove ->
+                            viewModel.removeFromCollection(bookToMove)
+                        })
                     }
                 }
             }
@@ -124,7 +132,7 @@ fun CollectionScreenContent(modifier: Modifier, viewModel: CollectionListViewMod
 }
 
 @Composable
-fun CollectionListItem(book: Book) {
+fun CollectionListItem(book: Book, onButtonClick: (Book) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -133,28 +141,44 @@ fun CollectionListItem(book: Book) {
                 BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(8.dp)
             )
     ) {
-        Row(
-            modifier = Modifier.padding(8.dp)
-        ) {
-            AsyncImage(
-                model = if (book.coverId == null)
-                    R.drawable.error
-                else
-                    ImageRequest.Builder(LocalContext.current)
-                        .data("https://covers.openlibrary.org/b/id/${book.coverId}-L.jpg")
-                        .crossfade(true)
-                        .build(),
-                placeholder = painterResource(id = R.drawable.loading),
-                contentScale = ContentScale.Crop,
-                contentDescription = "Book Preview Image",
+        Column {
+            Row(
+                modifier = Modifier.padding(8.dp)
+            ) {
+                AsyncImage(
+                    model = if (book.coverId == null)
+                        R.drawable.error
+                    else
+                        ImageRequest.Builder(LocalContext.current)
+                            .data("https://covers.openlibrary.org/b/id/${book.coverId}-L.jpg")
+                            .crossfade(true)
+                            .build(),
+                    placeholder = painterResource(id = R.drawable.loading),
+                    contentScale = ContentScale.Crop,
+                    contentDescription = "Book Preview Image",
+                    modifier = Modifier
+                        .size(120.dp)
+                        .padding(end = 8.dp)
+                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = book.title ?: "Unknown Title")
+                    Text(text = book.authorName ?: "Unknown Author")
+                    Text(text = book.subject ?: "No Subject")
+                }
+            }
+            OutlinedButton(
+                onClick = { onButtonClick(book) },
                 modifier = Modifier
-                    .size(120.dp)
-                    .padding(end = 8.dp)
-            )
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = book.title ?: "Unknown Title")
-                Text(text = book.authorName ?: "Unknown Author")
-                Text(text = book.subject ?: "No Subject")
+                    .padding(4.dp)
+                    .height(54.dp)
+                    .width(128.dp)
+            ) {
+                Text(
+                    text = "Remove",
+                    style = TextStyle(
+                        fontSize = 18.sp
+                    )
+                )
             }
         }
     }

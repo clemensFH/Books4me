@@ -12,7 +12,7 @@ class HomeScreenViewModel(private val repository: BookRepository) : ViewModel(){
         val toAdd = GetBookFromSearchResult(book)
 
         viewModelScope.launch {
-            repository.insertBook(toAdd)
+            repository.insertBook(toAdd, "readlist")
         }
     }
 
@@ -20,7 +20,7 @@ class HomeScreenViewModel(private val repository: BookRepository) : ViewModel(){
         val toAdd = GetBookFromSearchResult(book)
 
         viewModelScope.launch {
-            repository.insertBook(toAdd)
+            repository.insertBook(toAdd, "collection")
         }
     }
 
@@ -28,7 +28,7 @@ class HomeScreenViewModel(private val repository: BookRepository) : ViewModel(){
         val toAdd = GetBookFromSearchResult(book)
 
         viewModelScope.launch {
-            repository.insertBook(toAdd)
+            repository.insertBook(toAdd, "plan_to_read")
         }
     }
 
