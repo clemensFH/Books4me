@@ -24,7 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -113,7 +112,7 @@ fun BookItem(bookSearchResult: BookSearchResult,
                 ) {
                     Text(
                         text = "Readlist",
-                        style = TextStyle(
+                        style = androidx.compose.ui.text.TextStyle(
                             fontSize = 18.sp
                         )
                     )
@@ -130,7 +129,7 @@ fun BookItem(bookSearchResult: BookSearchResult,
                 ) {
                     Text(
                         text = "Plan-to- Read",
-                        style = TextStyle(
+                        style = androidx.compose.ui.text.TextStyle(
                             fontSize = 18.sp
                         )
                     )
@@ -152,7 +151,7 @@ fun BookItem(bookSearchResult: BookSearchResult,
                 ) {
                     Text(
                         text = "Collection",
-                        style = TextStyle(
+                        style = androidx.compose.ui.text.TextStyle(
                             fontSize = 18.sp
                         )
                     )

@@ -20,7 +20,7 @@ class BookRepository(private val bookDao: BookDao) {
 
     suspend fun deleteBook(book: Book) = bookDao.delete(book)
 
-    suspend fun getBookById(id: Long) = bookDao.getById(id)
+    fun getBookById(id: Long): Flow<Book?> = bookDao.getById(id)
 
     fun getBooksInCollectionlist(): Flow<List<Book>> = bookDao.getBooksInCollectionlist()
 

@@ -17,7 +17,7 @@ data class BookResponse(
 //    val format : List<String>? = null,
 //    val has_fulltext : Boolean? = null,
     val isbn : List<String>? = null,
-//    val key : String? = null,
+    val key : String? = null,
 //    val last_modified_i : Int? = null,
     val number_of_pages_median : Int? = null,
 //    val public_scan_b : Boolean? = null,
