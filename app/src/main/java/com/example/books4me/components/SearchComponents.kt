@@ -2,6 +2,7 @@ package com.example.books4me.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,6 +33,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.books4me.API.dto.BookSearchResult
 import com.example.books4me.R
+import com.example.books4me.navigation.Screen
 import com.example.books4me.viewmodels.BookViewModel
 import com.example.books4me.viewmodels.HomeScreenViewModel
 import com.example.books4me.viewmodels.ReadlistViewModel
@@ -51,25 +53,23 @@ fun SearchResultList(
 }
 
 @Composable
-fun BookItem(bookSearchResult: BookSearchResult,
-             navController: NavHostController,
-             viewModel: HomeScreenViewModel) {
+fun BookItem(
+    bookSearchResult: BookSearchResult,
+    navController: NavHostController,
+    viewModel: HomeScreenViewModel
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .border(
-                BorderStroke(1.dp, Color.Gray),
-                shape = RoundedCornerShape(8.dp)
-            ),
+            .clickable {
+                navController.navigate(Screen.BookDetail.createRoute(bookSearchResult.id))
+            }
+            .border(BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(8.dp)),
         shape = RoundedCornerShape(8.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(modifier = Modifier.fillMaxWidth()) {
                 AsyncImage(
                     model = if (bookSearchResult.coverId == null)
                         R.drawable.error
@@ -90,70 +90,18 @@ fun BookItem(bookSearchResult: BookSearchResult,
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Text(text = bookSearchResult.title ?: "Unknown Title", fontSize = 19.sp, fontWeight = FontWeight.Bold)
-                    Text(text = bookSearchResult.authorName ?: "Unknown Author", fontSize = 17.sp)
-                    Text(text = bookSearchResult.subject ?: "No Subject", fontSize = 14.sp)
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                OutlinedButton(
-                    onClick = {
-                        viewModel.addToReadlist(bookSearchResult)
-                        navController.navigate("readlist")
-                    },
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .height(54.dp)
-                        .width(128.dp)
-                ) {
                     Text(
-                        text = "Readlist",
-                        style = androidx.compose.ui.text.TextStyle(
-                            fontSize = 18.sp
-                        )
+                        text = bookSearchResult.title ?: "Unknown Title",
+                        fontSize = 19.sp,
+                        fontWeight = FontWeight.Bold
                     )
-                }
-                OutlinedButton(
-                    onClick = {
-                        viewModel.addToPlanToReadlist(bookSearchResult)
-                        navController.navigate("plan_to_read")
-                    },
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .height(54.dp)
-                        .width(128.dp)
-                ) {
                     Text(
-                        text = "Plan-to- Read",
-                        style = androidx.compose.ui.text.TextStyle(
-                            fontSize = 18.sp
-                        )
+                        text = bookSearchResult.authorName ?: "Unknown Author",
+                        fontSize = 17.sp
                     )
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                OutlinedButton(
-                    onClick = {
-                        viewModel.addToCollection(bookSearchResult)
-                        navController.navigate("collection")
-                    },
-                    modifier = Modifier
-                        .height(54.dp)
-                        .width(128.dp)
-                ) {
                     Text(
-                        text = "Collection",
-                        style = androidx.compose.ui.text.TextStyle(
-                            fontSize = 18.sp
-                        )
+                        text = bookSearchResult.subject ?: "No Subject",
+                        fontSize = 14.sp
                     )
                 }
             }

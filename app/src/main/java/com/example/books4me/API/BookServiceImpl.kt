@@ -37,6 +37,7 @@ class BookServiceImpl : BookService {
 
         val books = bookResponses.docs.map {
             BookSearchResult(
+                id = it.key?.split("/")?.last()?.removePrefix("OL")?.toLongOrNull() ?: -1L,
                 authorName = it.author_name?.firstOrNull().orEmpty(),
                 publishDate = it.publish_date?.firstOrNull().orEmpty(),
                 title = it.title.orEmpty(),
@@ -44,7 +45,7 @@ class BookServiceImpl : BookService {
                 pages = it.number_of_pages_median,
                 coverId = it.cover_i,
                 publisher = it.publisher?.firstOrNull().orEmpty(),
-                subject = if(it.subject_facet != null) concatFirstThree(it.subject_facet) else ""
+                subject = if (it.subject_facet != null) concatFirstThree(it.subject_facet) else ""
             )
         }
 

@@ -7,47 +7,48 @@ import com.example.books4me.model.Book
 import com.example.books4me.worker.BookRepository
 import kotlinx.coroutines.launch
 
-class HomeScreenViewModel(private val repository: BookRepository) : ViewModel(){
-    fun addToReadlist(book: BookSearchResult){
-        val toAdd = GetBookFromSearchResult(book)
+class HomeScreenViewModel(private val repository: BookRepository) : ViewModel() {
 
+    fun getBookById(bookId: Long) = repository.getBookById(bookId)
+
+    fun addToReadlist(book: BookSearchResult) {
+        val toAdd = book.toBook()
         viewModelScope.launch {
-            repository.insertBook(toAdd)
+            repository.insertBook(toAdd.copy(isInReadlist = true))
         }
     }
 
-    fun addToCollection(book: BookSearchResult){
-        val toAdd = GetBookFromSearchResult(book)
-
+    fun addToPlanToReadlist(book: BookSearchResult) {
+        val toAdd = book.toBook()
         viewModelScope.launch {
-            repository.insertBook(toAdd)
+            repository.insertBook(toAdd.copy(isInPlanToReadlist = true))
         }
     }
 
-    fun addToPlanToReadlist(book: BookSearchResult){
-        val toAdd = GetBookFromSearchResult(book)
-
+    fun addToCollection(book: BookSearchResult) {
+        val toAdd = book.toBook()
         viewModelScope.launch {
-            repository.insertBook(toAdd)
+            repository.insertBook(toAdd.copy(isInCollectionlist = true))
         }
     }
+}
 
-    private fun GetBookFromSearchResult(book: BookSearchResult): Book {
-        val toAdd = Book(
-            title = book.title,
-            authorName = book.authorName,
-            subject = book.subject,
-            publishDate = book.publishDate,
-            publisher = book.publisher,
-            pages = book.pages,
-            isbn = book.isbn,
-            coverId = book.coverId,
-            rating = 0,
-            comment = "",
-            isInReadlist = true,
-            isInCollectionlist = false,
-            isInPlanToReadlist = false
-        )
-        return toAdd
-    }
+// Extension function to convert BookSearchResult to Book
+fun BookSearchResult.toBook(): Book {
+    return Book(
+        id = this.id,
+        title = this.title,
+        authorName = this.authorName,
+        subject = this.subject,
+        publishDate = this.publishDate,
+        publisher = this.publisher,
+        pages = this.pages,
+        isbn = this.isbn,
+        coverId = this.coverId,
+        rating = 0,
+        comment = "",
+        isInReadlist = false,
+        isInCollectionlist = false,
+        isInPlanToReadlist = false
+    )
 }
