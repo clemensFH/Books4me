@@ -37,7 +37,6 @@ class BookServiceImpl : BookService {
 
         val books = bookResponses.docs.map {
             BookSearchResult(
-                id = it.key?.split("/")?.last()?.removePrefix("OL")?.toLongOrNull() ?: -1L,
                 authorName = it.author_name?.firstOrNull().orEmpty(),
                 publishDate = it.publish_date?.firstOrNull().orEmpty(),
                 title = it.title.orEmpty(),

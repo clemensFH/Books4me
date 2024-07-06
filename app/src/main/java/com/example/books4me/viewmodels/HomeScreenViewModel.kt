@@ -13,22 +13,25 @@ class HomeScreenViewModel(private val repository: BookRepository) : ViewModel() 
 
     fun addToReadlist(book: BookSearchResult) {
         val toAdd = book.toBook()
+        toAdd.isInReadlist = true
         viewModelScope.launch {
-            repository.insertBook(toAdd.copy(isInReadlist = true))
+            repository.insertBook(toAdd)
         }
     }
 
     fun addToPlanToReadlist(book: BookSearchResult) {
         val toAdd = book.toBook()
+        toAdd.isInPlanToReadlist = true
         viewModelScope.launch {
-            repository.insertBook(toAdd.copy(isInPlanToReadlist = true))
+            repository.insertBook(toAdd)
         }
     }
 
     fun addToCollection(book: BookSearchResult) {
         val toAdd = book.toBook()
+        toAdd.isInCollectionlist = true
         viewModelScope.launch {
-            repository.insertBook(toAdd.copy(isInCollectionlist = true))
+            repository.insertBook(toAdd)
         }
     }
 }
@@ -36,7 +39,6 @@ class HomeScreenViewModel(private val repository: BookRepository) : ViewModel() 
 // Extension function to convert BookSearchResult to Book
 fun BookSearchResult.toBook(): Book {
     return Book(
-        id = this.id,
         title = this.title,
         authorName = this.authorName,
         subject = this.subject,

@@ -159,7 +159,6 @@ fun ButtonSection(book: Book, viewModel: HomeScreenViewModel, navController: Nav
 
 fun Book.toBookSearchResult(): BookSearchResult {
     return BookSearchResult(
-        id = this.id,
         title = this.title,
         authorName = this.authorName,
         subject = this.subject,
