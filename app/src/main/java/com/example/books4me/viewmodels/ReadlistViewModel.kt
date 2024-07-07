@@ -48,6 +48,10 @@ class ReadlistViewModel(private val repository: BookRepository) : ViewModel() {
         }
     }
 
+    fun clearSearchResult(){
+        _searchResults.value = emptyList()
+    }
+
     fun searchBooksByQuery(query: String) {
         if (query.isEmpty()) {
             _searchResults.value = emptyList()

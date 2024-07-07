@@ -45,6 +45,10 @@ class CollectionListViewModel(private val repository: BookRepository) : ViewMode
         }
     }
 
+    fun clearSearchResult(){
+        _searchResults.value = emptyList()
+    }
+
     fun searchBooksByQuery(query: String) {
         if (query.isEmpty()) {
             _searchResults.value = emptyList()

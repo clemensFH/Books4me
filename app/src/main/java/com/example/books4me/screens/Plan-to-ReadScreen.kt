@@ -63,8 +63,13 @@ fun PlanToReadScreenContent(
     navController: NavHostController
 ) {
     var searchQuery by remember { mutableStateOf("") }
+
     val books by viewModel.books.observeAsState(emptyList())
     val searchResults by viewModel.searchResults.observeAsState(emptyList())
+
+    if (searchQuery.isEmpty()) {
+        viewModel.clearSearchResult()
+    }
 
     Column(modifier = modifier) {
         Row(modifier = Modifier
@@ -93,7 +98,12 @@ fun PlanToReadScreenContent(
             contentAlignment = Alignment.Center
         ) {
             Spacer(modifier = Modifier.padding(16.dp))
-            val displayBooks = searchResults.ifEmpty { books }
+            var showDelete = true
+            var displayBooks = books
+            if (searchQuery.isNotEmpty()){
+                displayBooks = searchResults
+                showDelete = false
+            }
             if (displayBooks.isEmpty()) {
                 Text(text = "No search results")
             } else {
@@ -102,6 +112,7 @@ fun PlanToReadScreenContent(
                         PlanToReadListItem(
                             book = book,
                             navController = navController,
+                            showDelete = showDelete,
                             onDelete = {
                                 viewModel.removeFromPlanToRead(it)
                             }
@@ -114,7 +125,7 @@ fun PlanToReadScreenContent(
 }
 
 @Composable
-fun PlanToReadListItem(book: Book, navController: NavHostController, onDelete: (Book) -> Unit) {
+fun PlanToReadListItem(book: Book, navController: NavHostController, showDelete: Boolean, onDelete: (Book) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
 
     if (showDialog) {
@@ -177,8 +188,10 @@ fun PlanToReadListItem(book: Book, navController: NavHostController, onDelete: (
                     Text(text = book.authorName ?: "Unknown Author")
                     Text(text = book.subject ?: "No Subject")
                 }
-                IconButton(onClick = { showDialog = true }) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete Icon")
+                if (showDelete) {
+                    IconButton(onClick = { showDialog = true }) {
+                        Icon(Icons.Default.Delete, contentDescription = "Delete Icon")
+                    }
                 }
             }
         }

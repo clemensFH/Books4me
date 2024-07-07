@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.books4me.API.BookServiceImpl
 import com.example.books4me.API.dto.BookSearchResult
+import com.example.books4me.API.dto.getBackups
 import com.example.books4me.components.AppBottomNavigation
 import com.example.books4me.components.SearchResultList
 import com.example.books4me.viewmodels.HomeScreenViewModel
@@ -89,7 +90,7 @@ fun HomeScreenContent(
                         withContext(Dispatchers.Main) {
                             isLoading = false
                             errorMessage = "Failed to load books: ${e.message}"
-                            println(errorMessage)
+                            books = getBackups()
                         }
                     }
                 }
@@ -110,9 +111,9 @@ fun HomeScreenContent(
                 isLoading -> {
                     CircularProgressIndicator()
                 }
-                errorMessage != null -> {
-                    Text(text = errorMessage ?: "Unknown error")
-                }
+//                errorMessage != null -> {
+//                    Text(text = errorMessage ?: "Unknown error")
+//                }
                 books.isEmpty() -> {
                     Text(text = "No search results")
                 }
