@@ -6,12 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.books4me.model.Book
 import com.example.books4me.worker.BookRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class CollectionListViewModel(private val repository: BookRepository) : ViewModel(){
+class CollectionListViewModel(private val repository: BookRepository) : ViewModel() {
     private val _books = MutableLiveData<List<Book>>(emptyList())
     val books: LiveData<List<Book>> = _books
     private val _searchResults = MutableLiveData<List<Book>>(emptyList())
@@ -19,19 +17,20 @@ class CollectionListViewModel(private val repository: BookRepository) : ViewMode
 
     init {
         viewModelScope.launch {
-            repository.getBooksInCollectionlist().collect{
+            repository.getBooksInCollectionlist().collect {
                 _books.value = it
             }
         }
     }
 
-    fun removeFromCollection(book: Book){
+    fun removeFromCollection(book: Book) {
         viewModelScope.launch {
             repository.deleteBook(book)
+            _books.value = _books.value?.filter { it.id != book.id }
         }
     }
 
-    fun moveToReadlist(book: Book){
+    fun moveToReadlist(book: Book) {
         book.isInCollectionlist = false
         book.isInReadlist = true
         viewModelScope.launch {
@@ -39,7 +38,7 @@ class CollectionListViewModel(private val repository: BookRepository) : ViewMode
         }
     }
 
-    fun moveToPlanToRead(book: Book){
+    fun moveToPlanToRead(book: Book) {
         book.isInCollectionlist = false
         book.isInPlanToReadlist = true
         viewModelScope.launch {
@@ -57,4 +56,25 @@ class CollectionListViewModel(private val repository: BookRepository) : ViewMode
         }
         _searchResults.value = filteredBooks
     }
+
+    fun searchBooksByFilters(title: String, author: String, genre: String, date: String) {
+        val filteredBooks = _books.value?.filter { book ->
+            (title.isBlank() || book.title?.contains(title, ignoreCase = true) == true) &&
+                    (author.isBlank() || book.authorName?.contains(author, ignoreCase = true) == true) &&
+                    (genre.isBlank() || book.subject?.contains(genre, ignoreCase = true) == true) &&
+                    (date.isBlank() || book.publishDate?.contains(date, ignoreCase = true) == true)
+        } ?: emptyList()
+        _searchResults.value = filteredBooks
+    }
+
+    fun searchBooksByQuery(query: String) {
+        val filteredBooks = _books.value?.filter { book ->
+            book.title?.contains(query, ignoreCase = true) == true ||
+                    book.authorName?.contains(query, ignoreCase = true) == true ||
+                    book.subject?.contains(query, ignoreCase = true) == true ||
+                    book.publishDate?.contains(query, ignoreCase = true) == true
+        } ?: emptyList()
+        _searchResults.value = filteredBooks
+    }
 }
+

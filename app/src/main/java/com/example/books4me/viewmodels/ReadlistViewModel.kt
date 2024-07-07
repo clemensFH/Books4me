@@ -29,6 +29,7 @@ class ReadlistViewModel(private val repository: BookRepository) : ViewModel() {
     fun removeFromReadlist(book: Book) {
         viewModelScope.launch {
             repository.deleteBook(book)
+            _books.value = _books.value?.filter { it.id != book.id }
         }
     }
 
@@ -56,6 +57,16 @@ class ReadlistViewModel(private val repository: BookRepository) : ViewModel() {
                 book.title?.contains(query, ignoreCase = true) ?: false
             } ?: emptyList()
         }
+        _searchResults.value = filteredBooks
+    }
+
+    fun searchBooksByQuery(query: String) {
+        val filteredBooks = _books.value?.filter { book ->
+            book.title?.contains(query, ignoreCase = true) == true ||
+                    book.authorName?.contains(query, ignoreCase = true) == true ||
+                    book.subject?.contains(query, ignoreCase = true) == true ||
+                    book.publishDate?.contains(query, ignoreCase = true) == true
+        } ?: emptyList()
         _searchResults.value = filteredBooks
     }
 

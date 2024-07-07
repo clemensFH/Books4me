@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -62,45 +61,44 @@ fun CollectionScreenContent(
     viewModel: CollectionListViewModel,
     navController: NavHostController
 ) {
-    var searchText by remember { mutableStateOf("") }
+    var searchQuery by remember { mutableStateOf("") }
 
     val books by viewModel.books.observeAsState(emptyList())
     val searchResults by viewModel.searchResults.observeAsState(emptyList())
 
     Column(modifier = modifier) {
-        Row {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)) {
             TextField(
-                value = searchText,
-                onValueChange = { searchText = it },
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .weight(1f),
-                placeholder = { Text("Search...") },
+                    .weight(1f)
+                    .padding(end = 8.dp),
+                placeholder = { Text("Search by Title, Author, Genre, or Date") },
                 singleLine = true,
-                leadingIcon = {
-                    Icon(Icons.Default.Search, contentDescription = "Search Icon")
-                }
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") }
             )
-            OutlinedButton(onClick = {
-                viewModel.searchBooksByTitle(searchText)
-            }) {
+            OutlinedButton(
+                onClick = {
+                    viewModel.searchBooksByQuery(searchQuery)
+                },
+                modifier = Modifier.align(Alignment.CenterVertically)
+            ) {
                 Text(text = "Search")
             }
         }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(16.dp)
                 .border(BorderStroke(1.dp, Color.Black))
                 .padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
             Spacer(modifier = Modifier.padding(16.dp))
-            val displayBooks = if (searchText.isBlank()) {
-                books
-            } else {
-                searchResults
-            }
+            val displayBooks = searchResults.ifEmpty { books }
             if (displayBooks.isEmpty()) {
                 Text(text = "No search results")
             } else {
@@ -136,14 +134,14 @@ fun CollectionListItem(book: Book, navController: NavHostController, onDelete: (
                         showDialog = false
                     }
                 ) {
-                    Text("No")
+                    Text("Yes")
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showDialog = false }
                 ) {
-                    Text("Yes")
+                    Text("No")
                 }
             }
         )
@@ -191,3 +189,4 @@ fun CollectionListItem(book: Book, navController: NavHostController, onDelete: (
         }
     }
 }
+

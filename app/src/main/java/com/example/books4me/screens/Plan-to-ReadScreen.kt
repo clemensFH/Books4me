@@ -62,58 +62,55 @@ fun PlanToReadScreenContent(
     viewModel: PlanToReadlistViewModel,
     navController: NavHostController
 ) {
-    var searchText by remember { mutableStateOf("") }
-    val books by viewModel.books.observeAsState()
-    val searchResults by viewModel.searchResults.observeAsState()
+    var searchQuery by remember { mutableStateOf("") }
+    val books by viewModel.books.observeAsState(emptyList())
+    val searchResults by viewModel.searchResults.observeAsState(emptyList())
 
     Column(modifier = modifier) {
-        Row {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)) {
             TextField(
-                value = searchText,
-                onValueChange = { searchText = it },
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .weight(1f),
-                placeholder = { Text("Search...") },
+                    .weight(1f)
+                    .padding(end = 8.dp),
+                placeholder = { Text("Search by Title, Author, Genre, or Date") },
                 singleLine = true,
-                leadingIcon = {
-                    Icon(Icons.Default.Search, contentDescription = "Search Icon")
-                }
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") }
             )
-            OutlinedButton(onClick = {
-                viewModel.searchBooksByTitle(searchText)
-            }) {
+            OutlinedButton(
+                onClick = {
+                    viewModel.searchBooksByQuery(searchQuery)
+                },
+                modifier = Modifier.align(Alignment.CenterVertically)
+            ) {
                 Text(text = "Search")
             }
         }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(16.dp)
                 .border(BorderStroke(1.dp, Color.Black))
                 .padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
             Spacer(modifier = Modifier.padding(16.dp))
-            val displayBooks = if (searchText.isBlank()) {
-                books
+            val displayBooks = searchResults.ifEmpty { books }
+            if (displayBooks.isEmpty()) {
+                Text(text = "No search results")
             } else {
-                searchResults
-            }
-            if (displayBooks != null) {
-                if (displayBooks.isEmpty()) {
-                    Text(text = "No search results")
-                } else {
-                    LazyColumn {
-                        items(displayBooks) { book ->
-                            PlanToReadListItem(
-                                book = book,
-                                onDelete = {
-                                    viewModel.removeFromPlanToRead(it)
-                                },
-                                navController = navController
-                            )
-                        }
+                LazyColumn {
+                    items(displayBooks) { book ->
+                        PlanToReadListItem(
+                            book = book,
+                            navController = navController,
+                            onDelete = {
+                                viewModel.removeFromPlanToRead(it)
+                            }
+                        )
                     }
                 }
             }
@@ -137,14 +134,14 @@ fun PlanToReadListItem(book: Book, navController: NavHostController, onDelete: (
                         showDialog = false
                     }
                 ) {
-                    Text("No")
+                    Text("Yes")
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showDialog = false }
                 ) {
-                    Text("Yes")
+                    Text("No")
                 }
             }
         )

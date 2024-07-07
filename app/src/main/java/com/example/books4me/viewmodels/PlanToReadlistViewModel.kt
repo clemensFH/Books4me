@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class PlanToReadlistViewModel(private val repository: BookRepository) : ViewModel(){
+class PlanToReadlistViewModel(private val repository: BookRepository) : ViewModel() {
     private val _books = MutableLiveData<List<Book>>(emptyList())
     val books: LiveData<List<Book>> = _books
     private val _searchResults = MutableLiveData<List<Book>>(emptyList())
@@ -19,19 +19,20 @@ class PlanToReadlistViewModel(private val repository: BookRepository) : ViewMode
 
     init {
         viewModelScope.launch {
-            repository.getBooksInPlanToReadlist().collect{
+            repository.getBooksInPlanToReadlist().collect {
                 _books.value = it
             }
         }
     }
 
-    fun removeFromPlanToRead(book: Book){
+    fun removeFromPlanToRead(book: Book) {
         viewModelScope.launch {
             repository.deleteBook(book)
+            _books.value = _books.value?.filter { it.id != book.id }
         }
     }
 
-    fun moveToReadlist(book: Book){
+    fun moveToReadlist(book: Book) {
         book.isInPlanToReadlist = false
         book.isInReadlist = true
         viewModelScope.launch {
@@ -39,7 +40,7 @@ class PlanToReadlistViewModel(private val repository: BookRepository) : ViewMode
         }
     }
 
-    fun moveToCollection(book: Book){
+    fun moveToCollection(book: Book) {
         book.isInPlanToReadlist = false
         book.isInCollectionlist = true
         viewModelScope.launch {
@@ -55,6 +56,16 @@ class PlanToReadlistViewModel(private val repository: BookRepository) : ViewMode
                 book.title?.contains(query, ignoreCase = true) ?: false
             } ?: emptyList()
         }
+        _searchResults.value = filteredBooks
+    }
+
+    fun searchBooksByQuery(query: String) {
+        val filteredBooks = _books.value?.filter { book ->
+            book.title?.contains(query, ignoreCase = true) == true ||
+                    book.authorName?.contains(query, ignoreCase = true) == true ||
+                    book.subject?.contains(query, ignoreCase = true) == true ||
+                    book.publishDate?.contains(query, ignoreCase = true) == true
+        } ?: emptyList()
         _searchResults.value = filteredBooks
     }
 }
