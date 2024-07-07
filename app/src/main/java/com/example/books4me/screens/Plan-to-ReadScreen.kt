@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -107,8 +108,8 @@ fun PlanToReadScreenContent(
                         items(displayBooks) { book ->
                             PlanToReadListItem(
                                 book = book,
-                                onButtonClick = { bookToMove ->
-                                    viewModel.removeFromPlanToRead(bookToMove)
+                                onDelete = {
+                                    viewModel.removeFromPlanToRead(it)
                                 },
                                 navController = navController
                             )
@@ -121,7 +122,34 @@ fun PlanToReadScreenContent(
 }
 
 @Composable
-fun PlanToReadListItem(book: Book, onButtonClick: (Book) -> Unit, navController: NavHostController) {
+fun PlanToReadListItem(book: Book, navController: NavHostController, onDelete: (Book) -> Unit) {
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "Delete Book") },
+            text = { Text("Do you really want to delete this book?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDelete(book)
+                        showDialog = false
+                    }
+                ) {
+                    Text("No")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDialog = false }
+                ) {
+                    Text("Yes")
+                }
+            }
+        )
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -157,20 +185,9 @@ fun PlanToReadListItem(book: Book, onButtonClick: (Book) -> Unit, navController:
                     Text(text = book.authorName ?: "Unknown Author")
                     Text(text = book.subject ?: "No Subject")
                 }
-            }
-            OutlinedButton(
-                onClick = { onButtonClick(book) },
-                modifier = Modifier
-                    .padding(4.dp)
-                    .height(54.dp)
-                    .width(128.dp)
-            ) {
-                Text(
-                    text = "Remove",
-                    style = TextStyle(
-                        fontSize = 18.sp
-                    )
-                )
+                IconButton(onClick = { showDialog = true }) {
+                    Icon(Icons.Default.Delete, contentDescription = "Delete Icon")
+                }
             }
         }
     }

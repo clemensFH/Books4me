@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,10 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -101,9 +99,9 @@ fun ReadlistScreenContent(modifier: Modifier, viewModel: ReadlistViewModel, navC
             } else {
                 LazyColumn {
                     items(displayBooks) { book ->
-                        ReadListItem(book, onButtonClick = { bookToMove ->
-                            viewModel.moveToCollection(bookToMove)
-                        }, navController = navController)
+                        ReadListItem(book, navController, onDelete = {
+                            viewModel.removeBook(it)
+                        })
                     }
                 }
             }
@@ -112,7 +110,34 @@ fun ReadlistScreenContent(modifier: Modifier, viewModel: ReadlistViewModel, navC
 }
 
 @Composable
-fun ReadListItem(book: Book, onButtonClick: (Book) -> Unit, navController: NavHostController) {
+fun ReadListItem(book: Book, navController: NavHostController, onDelete: (Book) -> Unit) {
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "Delete Book") },
+            text = { Text("Do you really want to delete this book?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDelete(book)
+                        showDialog = false
+                    }
+                ) {
+                    Text("No")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDialog = false }
+                ) {
+                    Text("Yes")
+                }
+            }
+        )
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -148,34 +173,9 @@ fun ReadListItem(book: Book, onButtonClick: (Book) -> Unit, navController: NavHo
                     Text(text = book.authorName ?: "Unknown Author")
                     Text(text = book.subject ?: "No Subject")
                 }
-            }
-            OutlinedButton(
-                onClick = { onButtonClick(book) },
-                modifier = Modifier
-                    .padding(4.dp)
-                    .height(54.dp)
-                    .width(128.dp)
-            ) {
-                Text(
-                    text = "Remove",
-                    style = TextStyle(
-                        fontSize = 18.sp
-                    )
-                )
-            }
-            OutlinedButton(
-                onClick = { onButtonClick(book) },
-                modifier = Modifier
-                    .padding(4.dp)
-                    .height(54.dp)
-                    .width(128.dp)
-            ) {
-                Text(
-                    text = "To Collection",
-                    style = TextStyle(
-                        fontSize = 18.sp
-                    )
-                )
+                IconButton(onClick = { showDialog = true }) {
+                    Icon(Icons.Default.Delete, contentDescription = "Delete Icon")
+                }
             }
         }
     }

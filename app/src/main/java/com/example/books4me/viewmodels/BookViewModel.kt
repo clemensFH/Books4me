@@ -27,6 +27,7 @@ class BookViewModel : ViewModel() {
         }
     }
 
+
     fun getReadList() = readList
     fun getPlanToReadList() = planToReadList
     fun getCollectionList() = collectionList

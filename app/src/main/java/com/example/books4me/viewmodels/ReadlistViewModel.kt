@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class ReadlistViewModel(private val repository: BookRepository) : ViewModel(){
+class ReadlistViewModel(private val repository: BookRepository) : ViewModel() {
     private val _books = MutableLiveData<List<Book>>(emptyList())
     val books: LiveData<List<Book>> = _books
     private val _searchResults = MutableLiveData<List<Book>>(emptyList())
@@ -20,19 +20,19 @@ class ReadlistViewModel(private val repository: BookRepository) : ViewModel(){
 
     init {
         viewModelScope.launch {
-            repository.getBooksInReadlist().collect{
+            repository.getBooksInReadlist().collect {
                 _books.value = it
             }
         }
     }
 
-    fun removeFromReadlist(book: Book){
+    fun removeFromReadlist(book: Book) {
         viewModelScope.launch {
             repository.deleteBook(book)
         }
     }
 
-    fun moveToPlanToRead(book: Book){
+    fun moveToPlanToRead(book: Book) {
         book.isInReadlist = false
         book.isInPlanToReadlist = true
         viewModelScope.launch {
@@ -40,7 +40,7 @@ class ReadlistViewModel(private val repository: BookRepository) : ViewModel(){
         }
     }
 
-    fun moveToCollection(book: Book){
+    fun moveToCollection(book: Book) {
         book.isInReadlist = false
         book.isInCollectionlist = true
         viewModelScope.launch {
@@ -57,5 +57,11 @@ class ReadlistViewModel(private val repository: BookRepository) : ViewModel(){
             } ?: emptyList()
         }
         _searchResults.value = filteredBooks
+    }
+
+    fun removeBook(book: Book) {
+        viewModelScope.launch {
+            repository.deleteBook(book)
+        }
     }
 }
