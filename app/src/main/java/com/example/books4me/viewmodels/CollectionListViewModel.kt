@@ -26,7 +26,6 @@ class CollectionListViewModel(private val repository: BookRepository) : ViewMode
     fun removeFromCollection(book: Book) {
         viewModelScope.launch {
             repository.deleteBook(book)
-            _books.value = _books.value?.filter { it.id != book.id }
         }
     }
 
@@ -46,28 +45,12 @@ class CollectionListViewModel(private val repository: BookRepository) : ViewMode
         }
     }
 
-    fun searchBooksByTitle(query: String) {
-        val filteredBooks = if (query.isBlank()) {
-            emptyList()
-        } else {
-            _books.value?.filter { book ->
-                book.title?.contains(query, ignoreCase = true) ?: false
-            } ?: emptyList()
-        }
-        _searchResults.value = filteredBooks
-    }
-
-    fun searchBooksByFilters(title: String, author: String, genre: String, date: String) {
-        val filteredBooks = _books.value?.filter { book ->
-            (title.isBlank() || book.title?.contains(title, ignoreCase = true) == true) &&
-                    (author.isBlank() || book.authorName?.contains(author, ignoreCase = true) == true) &&
-                    (genre.isBlank() || book.subject?.contains(genre, ignoreCase = true) == true) &&
-                    (date.isBlank() || book.publishDate?.contains(date, ignoreCase = true) == true)
-        } ?: emptyList()
-        _searchResults.value = filteredBooks
-    }
-
     fun searchBooksByQuery(query: String) {
+        if (query.isEmpty()) {
+            _searchResults.value = emptyList()
+            return
+        }
+
         val filteredBooks = _books.value?.filter { book ->
             book.title?.contains(query, ignoreCase = true) == true ||
                     book.authorName?.contains(query, ignoreCase = true) == true ||

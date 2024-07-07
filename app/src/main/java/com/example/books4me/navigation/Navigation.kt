@@ -14,7 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.books4me.components.BookDetailView
+import com.example.books4me.screens.BookDetailScreen
 import com.example.books4me.screens.*
 import com.example.books4me.viewmodels.*
 import com.example.books4me.worker.BookDatabase
@@ -40,6 +40,7 @@ fun Navigation() {
     val homeScreenViewModel: HomeScreenViewModel = viewModel(factory = factory)
     val planToReadlistViewModel: PlanToReadlistViewModel = viewModel(factory = factory)
     val collectionListViewModel: CollectionListViewModel = viewModel(factory = factory)
+    val detailViewModel: BookDetailViewModel = viewModel(factory= factory)
 
     NavHost(
         navController = navController,
@@ -54,7 +55,7 @@ fun Navigation() {
             arguments = listOf(navArgument("bookId") { type = NavType.LongType })
         ) { backStackEntry ->
             val bookId = backStackEntry.arguments?.getLong("bookId") ?: throw IllegalStateException("Book ID is required")
-            BookDetailView(navController, bookId, homeScreenViewModel)
+            BookDetailScreen(navController, bookId, detailViewModel)
         }
     }
 }

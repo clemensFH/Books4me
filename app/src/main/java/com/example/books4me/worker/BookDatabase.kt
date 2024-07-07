@@ -8,7 +8,7 @@ import com.example.books4me.model.Book
 
 @Database(
     entities = [Book::class],
-    version = 2,
+    version = 1,
     exportSchema = false
 )
 

@@ -28,16 +28,16 @@ fun AppBottomNavigation(navController: NavHostController) {
             label = { Text("Home") }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.List, contentDescription = "Readlist") },
-            selected = currentRoute == Screen.Readlist.route,
-            onClick = { navController.navigate(Screen.Readlist.route) },
-            label = { Text("Readlist") }
-        )
-        NavigationBarItem(
             icon = { Icon(Icons.Default.ArrowForward, contentDescription = "Plan-to-Read") },
             selected = currentRoute == Screen.PlanToRead.route,
             onClick = { navController.navigate(Screen.PlanToRead.route) },
             label = { Text("Plan-to-Read") }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.List, contentDescription = "Readlist") },
+            selected = currentRoute == Screen.Readlist.route,
+            onClick = { navController.navigate(Screen.Readlist.route) },
+            label = { Text("Readlist") }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.Done, contentDescription = "Collection") },

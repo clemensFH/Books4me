@@ -21,7 +21,6 @@ data class Book(
     var isInReadlist: Boolean = false,
     var isInCollectionlist: Boolean = false,
     var isInPlanToReadlist: Boolean = false,
-    var bookRating: Int
 )
 
 

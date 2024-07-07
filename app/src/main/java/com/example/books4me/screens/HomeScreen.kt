@@ -11,20 +11,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.books4me.API.BookServiceImpl
 import com.example.books4me.API.dto.BookSearchResult
 import com.example.books4me.components.AppBottomNavigation
 import com.example.books4me.components.SearchResultList
-import com.example.books4me.viewmodels.BookViewModel
-import com.example.books4me.viewmodels.BookViewModelFactory
 import com.example.books4me.viewmodels.HomeScreenViewModel
-import com.example.books4me.viewmodels.ReadlistViewModel
-import com.example.books4me.worker.BookDatabase
-import com.example.books4me.worker.BookRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -96,6 +89,7 @@ fun HomeScreenContent(
                         withContext(Dispatchers.Main) {
                             isLoading = false
                             errorMessage = "Failed to load books: ${e.message}"
+                            println(errorMessage)
                         }
                     }
                 }

@@ -72,7 +72,10 @@ fun CollectionScreenContent(
             .padding(16.dp)) {
             TextField(
                 value = searchQuery,
-                onValueChange = { searchQuery = it },
+                onValueChange =
+                {searchQuery = it
+                    viewModel.searchBooksByQuery(searchQuery)
+                },
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 8.dp),
@@ -80,14 +83,6 @@ fun CollectionScreenContent(
                 singleLine = true,
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") }
             )
-            OutlinedButton(
-                onClick = {
-                    viewModel.searchBooksByQuery(searchQuery)
-                },
-                modifier = Modifier.align(Alignment.CenterVertically)
-            ) {
-                Text(text = "Search")
-            }
         }
         Box(
             modifier = Modifier

@@ -66,7 +66,10 @@ fun ReadlistScreenContent(modifier: Modifier, viewModel: ReadlistViewModel, navC
             .padding(16.dp)) {
             TextField(
                 value = searchQuery,
-                onValueChange = { searchQuery = it },
+                onValueChange =
+                {searchQuery = it
+                    viewModel.searchBooksByQuery(searchQuery)
+                },
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 8.dp),
@@ -74,14 +77,6 @@ fun ReadlistScreenContent(modifier: Modifier, viewModel: ReadlistViewModel, navC
                 singleLine = true,
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") }
             )
-            OutlinedButton(
-                onClick = {
-                    viewModel.searchBooksByQuery(searchQuery)
-                },
-                modifier = Modifier.align(Alignment.CenterVertically)
-            ) {
-                Text(text = "Search")
-            }
         }
         Box(
             modifier = Modifier
@@ -102,7 +97,7 @@ fun ReadlistScreenContent(modifier: Modifier, viewModel: ReadlistViewModel, navC
                             book = book,
                             navController = navController,
                             onDelete = {
-                                viewModel.removeBook(it)
+                                viewModel.removeFromReadlist(it)
                             }
                         )
                     }

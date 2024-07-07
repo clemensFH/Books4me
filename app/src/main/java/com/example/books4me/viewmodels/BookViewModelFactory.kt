@@ -11,6 +11,7 @@ class BookViewModelFactory(private val repository: BookRepository) : ViewModelPr
             modelClass.isAssignableFrom(HomeScreenViewModel::class.java) -> HomeScreenViewModel(repository) as T
             modelClass.isAssignableFrom(PlanToReadlistViewModel::class.java) -> PlanToReadlistViewModel(repository) as T
             modelClass.isAssignableFrom(CollectionListViewModel::class.java) -> CollectionListViewModel(repository) as T
+            modelClass.isAssignableFrom(BookDetailViewModel::class.java) -> BookDetailViewModel(repository) as T
 //            modelClass.isAssignableFrom(DetailViewModel::class.java) -> {
 //                val movieId = "DEFAULT VALUE"
 //                DetailViewModel(repository, movieId) as T

@@ -32,9 +32,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.books4me.API.dto.BookSearchResult
 import com.example.books4me.R
-import com.example.books4me.viewmodels.BookViewModel
 import com.example.books4me.viewmodels.HomeScreenViewModel
-import com.example.books4me.viewmodels.ReadlistViewModel
 
 
 @Composable

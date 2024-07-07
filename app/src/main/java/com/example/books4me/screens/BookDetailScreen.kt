@@ -1,4 +1,4 @@
-package com.example.books4me.components
+package com.example.books4me.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -7,14 +7,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
@@ -30,7 +32,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -46,26 +47,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.books4me.API.dto.BookSearchResult
 import com.example.books4me.R
 import com.example.books4me.model.Book
-import com.example.books4me.viewmodels.HomeScreenViewModel
+import com.example.books4me.viewmodels.BookDetailViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BookDetailView(
-    navController: NavHostController,
-    bookId: Long,
-    viewModel: HomeScreenViewModel = viewModel()
-) {
-    rememberCoroutineScope()
+fun BookDetailScreen(navController: NavHostController, bookId: Long, viewModel: BookDetailViewModel) {
     val book by viewModel.getBookById(bookId).collectAsState(initial = null)
 
     Scaffold(
@@ -80,15 +76,16 @@ fun BookDetailView(
             )
         }
     ) { innerPadding ->
-        Column(modifier = Modifier.background(Color.Red)) {
+        Column(modifier = Modifier
+            .padding(innerPadding)
+            .background(Color.Yellow)
+            .fillMaxHeight()) {
             book?.let { b ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(innerPadding)
                         .padding(16.dp)
-                        .border(BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(8.dp))
-                        .background(Color.Green)
+                        .border(BorderStroke(1.dp, Color.Gray))
                     ,
                     shape = RoundedCornerShape(8.dp)
                 ) {
@@ -111,25 +108,20 @@ fun BookDetailView(
                             Column(
                                 modifier = Modifier.weight(1f),
                                 verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.Start
                             ) {
                                 Text(
-                                    text = "Title: ${b.title}",
-                                    fontSize = 19.sp,
+                                    text = "${b.title}",
+                                    fontSize = 22.sp,
                                     style = MaterialTheme.typography.headlineMedium
-                                )
-                                Text(
-                                    text = "Author: ${b.authorName}",
-                                    fontSize = 17.sp,
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                                Text(
-                                    text = "Genres: ${b.subject}",
-                                    fontSize = 17.sp,
-                                    style = MaterialTheme.typography.bodyLarge
                                 )
                             }
                         }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        InfoText(title = "Author", value = b.authorName)
+                        InfoText(title = "Gneres", value = b.subject)
+                        InfoText(title = "Publisher", value = b.publisher)
+                        InfoText(title = "Published", value = b.publishDate)
+                        InfoText(title = "ISBN", value = b.isbn)
                         Spacer(modifier = Modifier.height(16.dp))
                         ButtonSection(book = b, viewModel = viewModel, navController = navController)
                     }
@@ -141,8 +133,24 @@ fun BookDetailView(
                     .wrapContentSize(Alignment.Center)
             )
         }
-        
-        
+
+
+    }
+}
+
+
+@Composable
+fun InfoText(title: String, value: String){
+    Column {
+        Text(text = "${title}:",
+            fontSize = 17.sp,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                fontWeight = FontWeight.Bold
+            ))
+        Text(text = value,
+            fontSize = 17.sp,
+            style = MaterialTheme.typography.bodyLarge)
+        Spacer(modifier = Modifier.height(5.dp))
     }
 }
 
@@ -150,14 +158,14 @@ fun BookDetailView(
 fun ReadlistButton(
     modifier: Modifier = Modifier,
     book: Book,
-    viewModel: HomeScreenViewModel,
+    viewModel: BookDetailViewModel,
     navController: NavHostController
 ) {
     val coroutineScope = rememberCoroutineScope()
     OutlinedButton(
         onClick = {
             coroutineScope.launch {
-                viewModel.addToReadlist(book.toBookSearchResult())
+                viewModel.addToReadList(book)
                 navController.navigate("readlist")
             }
         },
@@ -177,14 +185,14 @@ fun ReadlistButton(
 fun CollectionButton(
     modifier: Modifier = Modifier,
     book: Book,
-    viewModel: HomeScreenViewModel,
+    viewModel: BookDetailViewModel,
     navController: NavHostController
 ) {
     val coroutineScope = rememberCoroutineScope()
     OutlinedButton(
         onClick = {
             coroutineScope.launch {
-                viewModel.addToCollection(book.toBookSearchResult())
+                viewModel.addToCollection(book)
                 navController.navigate("collection")
             }
         },
@@ -201,8 +209,8 @@ fun CollectionButton(
 }
 
 @Composable
-fun ButtonSection(book: Book, viewModel: HomeScreenViewModel, navController: NavHostController) {
-    var bookRating by remember { mutableIntStateOf(book.bookRating) }
+fun ButtonSection(book: Book, viewModel: BookDetailViewModel, navController: NavHostController) {
+    var bookRating by remember { mutableIntStateOf(book.rating) }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         if (navController.previousBackStackEntry?.destination?.route == "readlist") {
             CollectionButton(book = book, viewModel = viewModel, navController = navController)
@@ -252,8 +260,10 @@ fun RatingSection(onRatingChange: (Int) -> Unit, currentRating: Int) {
 }
 
 @Composable
-fun CommentSection(book: Book?, viewModel: HomeScreenViewModel) {
-    Column {
+fun CommentSection(book: Book?, viewModel: BookDetailViewModel) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState())) {
         var comment by remember {
             mutableStateOf(book?.comment ?: "")
         }
@@ -268,8 +278,8 @@ fun CommentSection(book: Book?, viewModel: HomeScreenViewModel) {
                     fontSize = 20.sp,
                     style = MaterialTheme.typography.bodyLarge
                 )}
-                ,
-                modifier = Modifier.fillMaxWidth(),
+            ,
+            modifier = Modifier.fillMaxWidth(),
             textStyle = TextStyle(fontSize = 20.sp)
         )
         Spacer(modifier = Modifier.height(8.dp))

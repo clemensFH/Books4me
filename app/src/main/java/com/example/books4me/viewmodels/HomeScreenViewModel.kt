@@ -9,8 +9,6 @@ import kotlinx.coroutines.launch
 
 class HomeScreenViewModel(private val repository: BookRepository) : ViewModel() {
 
-    fun getBookById(bookId: Long) = repository.getBookById(bookId)
-
     fun addToReadlist(book: BookSearchResult) {
         val toAdd = book.toBook()
         toAdd.isInReadlist = true
@@ -34,20 +32,6 @@ class HomeScreenViewModel(private val repository: BookRepository) : ViewModel() 
             repository.insertBook(toAdd)
         }
     }
-
-    fun updateBookRating(book: Book, newRating: Int) {
-        viewModelScope.launch {
-            book.bookRating = newRating
-            repository.updateBook(book)
-        }
-    }
-
-    fun saveComment(book: Book, comment: String) {
-        viewModelScope.launch {
-            book.comment = comment
-            repository.updateBook(book)
-        }
-    }
 }
 
 // Extension function to convert BookSearchResult to Book
@@ -66,6 +50,5 @@ fun BookSearchResult.toBook(): Book {
         isInReadlist = false,
         isInCollectionlist = false,
         isInPlanToReadlist = false,
-        bookRating = 0
     )
 }
