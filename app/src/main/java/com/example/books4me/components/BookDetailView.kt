@@ -1,6 +1,7 @@
 package com.example.books4me.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,12 +19,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -30,11 +35,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -63,7 +70,7 @@ fun BookDetailView(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 title = { Text("Book Details") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -73,68 +80,69 @@ fun BookDetailView(
             )
         }
     ) { innerPadding ->
-        book?.let { b ->
-            var bookRating by remember { mutableIntStateOf(b.bookRating) }
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(innerPadding)
-                    .padding(16.dp)
-                    .border(BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(8.dp)),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        AsyncImage(
-                            model = if (b.coverId == null)
-                                R.drawable.error
-                            else
-                                ImageRequest.Builder(LocalContext.current)
-                                    .data("https://covers.openlibrary.org/b/id/${b.coverId}-L.jpg")
-                                    .crossfade(true)
-                                    .build(),
-                            placeholder = painterResource(id = R.drawable.loading),
-                            contentDescription = "Book Cover Image",
-                            modifier = Modifier
-                                .size(120.dp)
-                                .padding(end = 16.dp)
-                        )
-                        Column(
-                            modifier = Modifier.weight(1f),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                text = "Title: ${b.title}",
-                                fontSize = 19.sp,
-                                style = MaterialTheme.typography.headlineMedium
+        Column(modifier = Modifier.background(Color.Red)) {
+            book?.let { b ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(innerPadding)
+                        .padding(16.dp)
+                        .border(BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(8.dp))
+                        .background(Color.Green)
+                    ,
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            AsyncImage(
+                                model = if (b.coverId == null)
+                                    R.drawable.error
+                                else
+                                    ImageRequest.Builder(LocalContext.current)
+                                        .data("https://covers.openlibrary.org/b/id/${b.coverId}-L.jpg")
+                                        .crossfade(true)
+                                        .build(),
+                                placeholder = painterResource(id = R.drawable.loading),
+                                contentDescription = "Book Cover Image",
+                                modifier = Modifier
+                                    .size(120.dp)
+                                    .padding(end = 16.dp)
                             )
-                            Text(
-                                text = "Author: ${b.authorName}",
-                                fontSize = 17.sp,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Text(
-                                text = "Genres: ${b.subject}",
-                                fontSize = 17.sp,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    text = "Title: ${b.title}",
+                                    fontSize = 19.sp,
+                                    style = MaterialTheme.typography.headlineMedium
+                                )
+                                Text(
+                                    text = "Author: ${b.authorName}",
+                                    fontSize = 17.sp,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                                Text(
+                                    text = "Genres: ${b.subject}",
+                                    fontSize = 17.sp,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
                         }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        ButtonSection(book = b, viewModel = viewModel, navController = navController)
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ButtonSection(book = b, viewModel = viewModel, navController = navController)
-                    RatingSection(onRatingChange = { newRating ->
-                        bookRating = newRating
-                        viewModel.updateBookRating(b, newRating)
-                    })
                 }
-            }
-        } ?: Text(
-            text = "Loading book details...",
-            modifier = Modifier
-                .fillMaxSize()
-                .wrapContentSize(Alignment.Center)
-        )
+            } ?: Text(
+                text = "Loading book details...",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+            )
+        }
+        
+        
     }
 }
 
@@ -165,28 +173,6 @@ fun ReadlistButton(
     }
 }
 
-/*@Composable
-fun PlanToReadButton(modifier: Modifier = Modifier, book: Book, viewModel: HomeScreenViewModel, navController: NavHostController) {
-    val coroutineScope = rememberCoroutineScope()
-    OutlinedButton(
-        onClick = {
-            coroutineScope.launch {
-                viewModel.addToPlanToReadlist(book.toBookSearchResult())
-                navController.navigate("plan_to_read")
-            }
-        },
-        modifier
-            .padding(4.dp)
-            .height(54.dp)
-            .fillMaxWidth()
-    ) {
-        Text(
-            text = "Add to Plan to Read",
-            style = TextStyle(fontSize = 18.sp)
-        )
-    }
-}*/
-
 @Composable
 fun CollectionButton(
     modifier: Modifier = Modifier,
@@ -216,34 +202,43 @@ fun CollectionButton(
 
 @Composable
 fun ButtonSection(book: Book, viewModel: HomeScreenViewModel, navController: NavHostController) {
+    var bookRating by remember { mutableIntStateOf(book.bookRating) }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        if (navController.currentDestination?.route == "readlist") {
+        if (navController.previousBackStackEntry?.destination?.route == "readlist") {
             CollectionButton(book = book, viewModel = viewModel, navController = navController)
         }
 
-        if (navController.currentDestination?.route == "plan_to_read") {
+        if (navController.previousBackStackEntry?.destination?.route == "plan_to_read") {
             ReadlistButton(book = book, viewModel = viewModel, navController = navController)
+        }
+
+        if (navController.previousBackStackEntry?.destination?.route == "collection") {
+            RatingSection(onRatingChange = { newRating ->
+                bookRating = newRating
+                viewModel.updateBookRating(book, newRating)
+            },
+                currentRating = bookRating)
+            CommentSection(book, viewModel)
         }
     }
 }
 
 @Composable
-fun RatingSection(onRatingChange: (Int) -> Unit) {
+fun RatingSection(onRatingChange: (Int) -> Unit, currentRating: Int) {
     Column {
-        var userRating by remember { mutableIntStateOf(0) }
         Row {
             for (i in 1..5) {
                 IconButton(onClick = {
-                    userRating = i
-                    onRatingChange(userRating)
+                    onRatingChange(i)
                 }) {
                     Icon(
-                        imageVector = if (i <= userRating) {
+                        imageVector = if (i <= currentRating) {
                             Icons.Filled.Star
                         } else {
                             Icons.Outlined.Star
                         }, contentDescription = "Stars reflecting user rating",
-                        tint = if (i <= userRating) {
+                        Modifier.scale(2.4f),
+                        tint = if (i <= currentRating) {
                             Color.Yellow
                         } else {
                             Color.Unspecified
@@ -252,6 +247,38 @@ fun RatingSection(onRatingChange: (Int) -> Unit) {
                 }
             }
 
+        }
+    }
+}
+
+@Composable
+fun CommentSection(book: Book?, viewModel: HomeScreenViewModel) {
+    Column {
+        var comment by remember {
+            mutableStateOf(book?.comment ?: "")
+        }
+        Spacer(modifier = Modifier.height(15.dp))
+        OutlinedTextField(
+            value = comment, onValueChange = {
+                comment = it
+            },
+            label = {
+                Text(
+                    text = "Add a comment",
+                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.bodyLarge
+                )}
+                ,
+                modifier = Modifier.fillMaxWidth(),
+            textStyle = TextStyle(fontSize = 20.sp)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(onClick = {
+            if (book != null) {
+                viewModel.saveComment(book, comment)
+            }
+        }) {
+            Text("Save Comment")
         }
     }
 }

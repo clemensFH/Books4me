@@ -41,6 +41,13 @@ class HomeScreenViewModel(private val repository: BookRepository) : ViewModel() 
             repository.updateBook(book)
         }
     }
+
+    fun saveComment(book: Book, comment: String) {
+        viewModelScope.launch {
+            book.comment = comment
+            repository.updateBook(book)
+        }
+    }
 }
 
 // Extension function to convert BookSearchResult to Book
