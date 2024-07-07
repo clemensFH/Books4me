@@ -20,7 +20,8 @@ data class Book(
     var comment: String,
     var isInReadlist: Boolean = false,
     var isInCollectionlist: Boolean = false,
-    var isInPlanToReadlist: Boolean = false
+    var isInPlanToReadlist: Boolean = false,
+    var bookRating: Int
 )
 
 

@@ -34,6 +34,13 @@ class HomeScreenViewModel(private val repository: BookRepository) : ViewModel() 
             repository.insertBook(toAdd)
         }
     }
+
+    fun updateBookRating(book: Book, newRating: Int) {
+        viewModelScope.launch {
+            book.bookRating = newRating
+            repository.updateBook(book)
+        }
+    }
 }
 
 // Extension function to convert BookSearchResult to Book
@@ -51,6 +58,7 @@ fun BookSearchResult.toBook(): Book {
         comment = "",
         isInReadlist = false,
         isInCollectionlist = false,
-        isInPlanToReadlist = false
+        isInPlanToReadlist = false,
+        bookRating = 0
     )
 }
